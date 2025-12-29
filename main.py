@@ -5,43 +5,8 @@ import math
 import json
 import numpy as np
 from inference import get_model
-from dotenv import load_dotenv
 
-load_dotenv()
-
-# ============================================================
-# CONFIG
-# ============================================================
-
-MODEL_ID = "shotdetect3-x79bc/3"
-CONF_THRESHOLD = 0.3
-
-OUTPUT_DIR = "img/out"
-
-# --- ISSF RADII (твоя робоча версія) ---
-ISSF_RADII_MM = {
-    10: 5.5,
-    9: 10.5,
-    8: 15.5,
-    7: 20.5,
-    6: 25.5,
-    5: 30.5,
-    4: 35.5,
-    3: 40.5,
-    2: 45.5,
-    1: 50.5
-}
-
-BULLET_RADIUS_MM = 4.5  # НЕ ДІЛИМО
-
-# ============================================================
-# VISUAL TOGGLES
-# ============================================================
-
-SHOW_DISTANCE_LINES = True
-SHOW_DISTANCE_TEXT = True
-SHOW_RING_NUMBERS = True
-SHOW_BULLET_OUTLINE = True
+from config import *
 
 # ============================================================
 # HELPERS
