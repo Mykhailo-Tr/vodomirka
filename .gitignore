@@ -3,6 +3,8 @@ img/
 dev/
 
 static/out/
+static/uploads/
+static/snapshots/
 
 # --- environment variables ---
 .env
