@@ -3,6 +3,12 @@ let currentFile = null;
 const preview = document.getElementById("preview");
 const processBtn = document.getElementById("processBtn");
 
+const idealCheck = document.getElementById("idealCheck");
+const scoredCheck = document.getElementById("scoredCheck");
+
+const idealOverlay = document.getElementById("idealOverlay");
+const scoredOverlay = document.getElementById("scoredOverlay");
+
 document.getElementById("fileInput").addEventListener("change", async e => {
   const file = e.target.files[0];
   if (!file) return;
@@ -14,8 +20,10 @@ document.getElementById("fileInput").addEventListener("change", async e => {
   const data = await res.json();
 
   currentFile = data.filename;
+
   preview.src = data.image_url;
   preview.classList.remove("d-none");
+
   document.getElementById("baseImg").src = data.image_url;
 
   processBtn.disabled = false;
@@ -42,14 +50,14 @@ processBtn.onclick = async () => {
   jsonOut.textContent = JSON.stringify(data.json, null, 2);
 };
 
-// Overlay buttons
-document.querySelectorAll("[data-overlay]").forEach(btn => {
-  btn.onclick = () => {
-    const type = btn.dataset.overlay;
-    idealOverlay.classList.toggle("d-none", type === "scored" || type === "none");
-    scoredOverlay.classList.toggle("d-none", type === "ideal" || type === "none");
-  };
-});
+// Overlay toggles
+idealCheck.onchange = () => {
+  idealOverlay.classList.toggle("d-none", !idealCheck.checked);
+};
+
+scoredCheck.onchange = () => {
+  scoredOverlay.classList.toggle("d-none", !scoredCheck.checked);
+};
 
 // Copy JSON
 copyBtn.onclick = () => {
@@ -58,13 +66,11 @@ copyBtn.onclick = () => {
   setTimeout(() => copyBtn.innerText = "Copy", 2000);
 };
 
-// Modal
-document.querySelectorAll("img").forEach(img => {
-  img.onclick = () => {
-    if (!img.src) return;
-    modalImg.src = img.src;
-    imgModal.classList.remove("d-none");
-  };
+// Modal viewer
+document.addEventListener("click", e => {
+  if (e.target.tagName !== "IMG" || !e.target.src) return;
+  modalImg.src = e.target.src;
+  imgModal.classList.remove("d-none");
 });
 
 imgModal.onclick = () => imgModal.classList.add("d-none");

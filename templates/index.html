@@ -14,7 +14,7 @@
 
   <div class="row g-3">
 
-    <!-- LEFT: Upload -->
+    <!-- Upload -->
     <div class="col-md-3">
       <div class="card p-3 h-100">
         <h6>Завантаження</h6>
@@ -30,39 +30,51 @@
       </div>
     </div>
 
-    <!-- CENTER: Overlay -->
+    <!-- Overlay -->
     <div class="col-md-6">
       <div class="card p-3 h-100">
         <div class="d-flex justify-content-between mb-2">
           <h6>Оригінал + накладання</h6>
-          <div class="btn-group btn-group-sm">
-            <button class="btn btn-outline-secondary" data-overlay="ideal">Ideal</button>
-            <button class="btn btn-outline-secondary" data-overlay="scored">Scored</button>
-            <button class="btn btn-outline-secondary" data-overlay="both">Both</button>
-            <button class="btn btn-outline-secondary" data-overlay="none">None</button>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="idealCheck">
+            <label class="form-check-label">Ideal</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="scoredCheck">
+            <label class="form-check-label">Scored</label>
           </div>
         </div>
 
         <div class="overlay-container">
-          <img id="baseImg">
-          <img id="idealOverlay" class="overlay d-none">
-          <img id="scoredOverlay" class="overlay d-none">
+          <img id="baseImg" class="layer">
+          <img id="idealOverlay" class="layer overlay ideal d-none">
+          <img id="scoredOverlay" class="layer overlay d-none">
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: Stats -->
+    <!-- Result -->
     <div class="col-md-3">
       <div class="card p-3 h-100">
         <h6>Результат</h6>
+
         <div class="stat">Пострілів: <span id="shots">–</span></div>
-        <div class="stat">Сума: <span id="total">–</span></div>
+        <div class="stat mb-2">Сума: <span id="total">–</span></div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <strong>JSON</strong>
+          <button id="copyBtn" class="btn btn-sm btn-outline-secondary">
+            Copy
+          </button>
+        </div>
+
+        <pre id="jsonOut" class="json-box"></pre>
       </div>
     </div>
 
   </div>
 
-  <!-- IMAGES -->
+  <!-- Images -->
   <div class="row g-3 mt-3">
     <div class="col-md-6">
       <div class="card p-3">
@@ -78,24 +90,9 @@
     </div>
   </div>
 
-  <!-- JSON -->
-  <div class="row g-3 mt-3">
-    <div class="col-md-12">
-      <div class="card p-3">
-        <div class="d-flex justify-content-between">
-          <h6>JSON</h6>
-          <button id="copyBtn" class="btn btn-sm btn-outline-secondary">
-            Copy
-          </button>
-        </div>
-        <pre id="jsonOut"></pre>
-      </div>
-    </div>
-  </div>
-
 </div>
 
-<!-- MODAL -->
+<!-- Modal -->
 <div id="imgModal" class="modal-img d-none">
   <img id="modalImg">
 </div>
