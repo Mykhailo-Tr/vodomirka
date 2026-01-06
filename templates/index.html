@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>ISSF Target Scorer</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/style.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+<div class="container py-4">
+
+  <h2 class="mb-4">ISSF Running Target 10m</h2>
+
+  <!-- Upload -->
+  <div class="card p-3 mb-4">
+    <input type="file" id="fileInput" class="form-control">
+    <img id="preview" class="img-fluid mt-3 d-none">
+    <button class="btn btn-primary mt-3" id="processBtn" disabled>Обробити</button>
+  </div>
+
+  <!-- Output -->
+  <div id="output" class="d-none">
+
+    <div class="row mb-3">
+      <div class="col">
+        <div class="stat">Пострілів: <span id="shots"></span></div>
+        <div class="stat">Загальний результат: <span id="total"></span></div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <h6>Scored</h6>
+        <img id="scoredImg" class="img-fluid">
+      </div>
+      <div class="col-md-6">
+        <h6>Ideal</h6>
+        <img id="idealImg" class="img-fluid">
+      </div>
+    </div>
+
+    <h6>JSON</h6>
+    <pre id="jsonOut"></pre>
+  </div>
+
+</div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

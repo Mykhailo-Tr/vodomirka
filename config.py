@@ -24,7 +24,12 @@ CONF_THRESHOLD = 0.3
 # PATHS
 # ============================================================
 
-OUTPUT_DIR = "img/out"
+# For local
+# OUTPUT_DIR = "img/out"
+
+# For Flask - WEB APP
+OUTPUT_DIR = "static/out"
+
 
 # ============================================================
 # ISSF TARGET CONFIG
