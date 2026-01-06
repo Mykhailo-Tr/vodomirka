@@ -2,7 +2,7 @@
 img/
 dev/
 
-static/out/
+
 
 # --- environment variables ---
 .env
