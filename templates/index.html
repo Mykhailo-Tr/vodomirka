@@ -11,42 +11,78 @@
 <body class="bg-light">
 <div class="container py-4">
 
-  <h2 class="mb-4">ISSF Running Target 10m</h2>
+  <h3 class="mb-4">ISSF Running Target 10m</h3>
 
   <!-- Upload -->
   <div class="card p-3 mb-4">
     <input type="file" id="fileInput" class="form-control">
-    <img id="preview" class="img-fluid mt-3 d-none">
+    <img id="preview" class="preview-img d-none">
     <button class="btn btn-primary mt-3" id="processBtn" disabled>Обробити</button>
+  </div>
+
+  <!-- Viewer -->
+  <div id="viewerBlock" class="card mb-4 d-none">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>Перегляд</span>
+      <div class="btn-group btn-group-sm">
+        <button class="btn btn-outline-secondary" onclick="setView('original')">Original</button>
+        <button class="btn btn-outline-secondary" onclick="setView('scored')">Scored</button>
+        <button class="btn btn-outline-secondary" onclick="setView('ideal')">Ideal</button>
+      </div>
+    </div>
+    <div class="card-body text-center">
+      <img id="viewerImage" class="viewer-img" data-bs-toggle="modal" data-bs-target="#imgModal">
+    </div>
   </div>
 
   <!-- Output -->
   <div id="output" class="d-none">
 
-    <div class="row mb-3">
+    <div class="row mb-3 text-center">
       <div class="col">
-        <div class="stat">Пострілів: <span id="shots"></span></div>
-        <div class="stat">Загальний результат: <span id="total"></span></div>
+        <div class="stat">Пострілів</div>
+        <div id="shots"></div>
+      </div>
+      <div class="col">
+        <div class="stat">Загальний результат</div>
+        <div id="total"></div>
       </div>
     </div>
 
-    <div class="row mb-3">
+    <div class="row mb-3 text-center">
       <div class="col-md-6">
-        <h6>Scored</h6>
-        <img id="scoredImg" class="img-fluid">
+        <img id="thumbScored" class="thumb-img">
+        <div class="small">Scored</div>
       </div>
       <div class="col-md-6">
-        <h6>Ideal</h6>
-        <img id="idealImg" class="img-fluid">
+        <img id="thumbIdeal" class="thumb-img">
+        <div class="small">Ideal</div>
       </div>
     </div>
 
-    <h6>JSON</h6>
-    <pre id="jsonOut"></pre>
+    <div class="card">
+      <div class="card-header d-flex justify-content-between">
+        <span>JSON Output</span>
+        <button class="btn btn-sm btn-outline-secondary" onclick="copyJSON()">Copy</button>
+      </div>
+      <pre id="jsonOut" class="json-box"></pre>
+    </div>
+
   </div>
-
 </div>
 
+<!-- Fullscreen Modal -->
+<div class="modal fade" id="imgModal" tabindex="-1">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content bg-dark">
+      <div class="modal-body text-center">
+        <img id="modalImg" class="modal-img">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/static/js/app.js"></script>
 </body>
 </html>

@@ -1,11 +1,36 @@
-.stat {
-    font-size: 1.2rem;
+.preview-img {
+    max-height: 250px;
+    margin-top: 10px;
+  }
+  
+  .viewer-img {
+    max-height: 420px;
+    cursor: zoom-in;
+  }
+  
+  .thumb-img {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    border: 1px solid #ccc;
+  }
+  
+  .modal-img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+  
+  .stat {
+    font-size: 1.1rem;
     font-weight: 600;
-}
-
-pre {
-    background: #111;
-    color: #0f0;
-    padding: 10px;
+  }
+  
+  .json-box {
+    background: #0d1117;
+    color: #c9d1d9;
+    padding: 12px;
     font-size: 0.85rem;
-}
+    max-height: 300px;
+    overflow: auto;
+  }
+  

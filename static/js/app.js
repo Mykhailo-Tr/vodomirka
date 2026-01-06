@@ -1,6 +1,16 @@
 let currentFile = null;
+let images = {};
+let currentView = "original";
 
-document.getElementById("fileInput").addEventListener("change", async e => {
+const fileInput = document.getElementById("fileInput");
+const preview = document.getElementById("preview");
+const processBtn = document.getElementById("processBtn");
+
+const viewerBlock = document.getElementById("viewerBlock");
+const viewerImage = document.getElementById("viewerImage");
+const modalImg = document.getElementById("modalImg");
+
+fileInput.addEventListener("change", async e => {
   const file = e.target.files[0];
   if (!file) return;
 
@@ -11,15 +21,15 @@ document.getElementById("fileInput").addEventListener("change", async e => {
   const data = await res.json();
 
   currentFile = data.filename;
+  images.original = data.image_url;
 
-  const img = document.getElementById("preview");
-  img.src = data.image_url;
-  img.classList.remove("d-none");
+  preview.src = data.image_url;
+  preview.classList.remove("d-none");
 
-  document.getElementById("processBtn").disabled = false;
+  processBtn.disabled = false;
 });
 
-document.getElementById("processBtn").addEventListener("click", async () => {
+processBtn.addEventListener("click", async () => {
   const res = await fetch("/process", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -28,14 +38,36 @@ document.getElementById("processBtn").addEventListener("click", async () => {
 
   const data = await res.json();
 
+  images.scored = data.images.scored;
+  images.ideal = data.images.ideal;
+
+  setView("scored");
+
   document.getElementById("shots").innerText = data.stats.shots;
   document.getElementById("total").innerText = data.stats.total_score;
 
-  document.getElementById("scoredImg").src = data.images.scored;
-  document.getElementById("idealImg").src = data.images.ideal;
+  document.getElementById("thumbScored").src = images.scored;
+  document.getElementById("thumbIdeal").src = images.ideal;
 
-  document.getElementById("jsonOut").innerText =
+  document.getElementById("jsonOut").textContent =
     JSON.stringify(data.json, null, 2);
 
   document.getElementById("output").classList.remove("d-none");
+  viewerBlock.classList.remove("d-none");
 });
+
+function setView(type) {
+  if (!images[type]) return;
+  currentView = type;
+  viewerImage.src = images[type];
+}
+
+viewerImage.addEventListener("click", () => {
+  modalImg.src = viewerImage.src;
+});
+
+function copyJSON() {
+  navigator.clipboard.writeText(
+    document.getElementById("jsonOut").textContent
+  );
+}
