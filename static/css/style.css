@@ -1,36 +1,63 @@
-.preview-img {
-    max-height: 250px;
-    margin-top: 10px;
-  }
-  
-  .viewer-img {
-    max-height: 420px;
-    cursor: zoom-in;
-  }
-  
-  .thumb-img {
-    width: 180px;
-    height: 180px;
-    object-fit: contain;
+.preview-box {
+    width: 160px;
+    height: 160px;
     border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
-  .modal-img {
+  .preview-box img {
     max-width: 100%;
     max-height: 100%;
   }
   
+  .overlay-container {
+    position: relative;
+    width: 100%;
+  }
+  
+  .overlay-container img {
+    width: 100%;
+    display: block;
+  }
+  
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
   .stat {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     font-weight: 600;
   }
   
-  .json-box {
-    background: #0d1117;
-    color: #c9d1d9;
-    padding: 12px;
+  .result-img {
+    width: 100%;
+    cursor: zoom-in;
+  }
+  
+  pre {
+    background: #111;
+    color: #0f0;
+    padding: 10px;
     font-size: 0.85rem;
-    max-height: 300px;
-    overflow: auto;
+  }
+  
+  /* MODAL */
+  .modal-img {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  
+  .modal-img img {
+    max-width: 95%;
+    max-height: 95%;
   }
   
