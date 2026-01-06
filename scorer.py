@@ -6,6 +6,8 @@ import json
 import numpy as np
 from inference import get_model
 
+from overlay import overlay_ideal_on_real
+
 from config import *
 
 # ============================================================
@@ -89,6 +91,36 @@ def draw_ideal_target(shots, px_per_mm, out_path, size=1200):
                         cv2.FONT_HERSHEY_SIMPLEX,0.45,col,1)
 
     cv2.imwrite(out_path,img)
+    
+def draw_ideal_target_rgba(shots, px_per_mm, size=1200):
+    """
+    Ideal target with transparent background (RGBA)
+    Used ONLY for overlay
+    """
+    img = np.zeros((size, size, 4), np.uint8)
+    c = size // 2
+
+    # --- Black zone ---
+    cv2.circle(
+        img, (c, c),
+        int(ISSF_RADII_MM[5] * px_per_mm),
+        (0, 0, 0, 255), -1
+    )
+
+    # --- Rings ---
+    for pts, r_mm in ISSF_RADII_MM.items():
+        r_px = int(r_mm * px_per_mm)
+        col = (255,255,255,255) if pts >= 5 else (0,0,0,255)
+        cv2.circle(img, (c,c), r_px, col, 2)
+
+    # --- Center ---
+    cv2.drawMarker(
+        img, (c,c),
+        (255,0,0,255),
+        cv2.MARKER_CROSS, 40, 2
+    )
+
+    return img
 
 # ============================================================
 # REAL IMAGE DRAW
@@ -164,15 +196,28 @@ def score_image(path):
 
     out_real = os.path.join(OUTPUT_DIR, name + "_scored" + ext)
     out_ideal = os.path.join(OUTPUT_DIR, name + "_ideal" + ext)
+    out_overlay = os.path.join(OUTPUT_DIR, name + "_overlay" + ext)
 
     draw_real(img, center, shots, out_real)
     draw_ideal_target(shots, px_per_mm, out_ideal)
+    ideal_rgba = draw_ideal_target_rgba(shots, px_per_mm)
 
+    overlay_img = overlay_ideal_on_real(
+        real_bgr=img,
+        ideal_rgba=ideal_rgba,
+        center_px=center,
+        alpha=0.65
+    )
+
+    cv2.imwrite(out_overlay, overlay_img)
 
     return {
         "center_px":center.astype(int).tolist(),
         "shots":shots,
         "shots_count":len(shots),
-        "total_score":total
+        "total_score":total,
+        "images": {
+            "overlay": out_overlay
+        }
     }
 

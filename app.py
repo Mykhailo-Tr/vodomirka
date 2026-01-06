@@ -46,9 +46,11 @@ def process():
         "json": result,
         "images": {
             "scored": f"/{OUTPUT_DIR}/{name}_scored{ext}",
-            "ideal": f"/{OUTPUT_DIR}/{name}_ideal{ext}"
+            "ideal": f"/{OUTPUT_DIR}/{name}_ideal{ext}",
+            "overlay": f"/{OUTPUT_DIR}/{name}_overlay{ext}",
+
         }
     })
-
+    
 if __name__ == "__main__":
     app.run(debug=True)

@@ -3,11 +3,17 @@ let currentFile = null;
 const preview = document.getElementById("preview");
 const processBtn = document.getElementById("processBtn");
 
-const idealCheck = document.getElementById("idealCheck");
-const scoredCheck = document.getElementById("scoredCheck");
+const baseImg = document.getElementById("baseImg");
+const idealImg = document.getElementById("idealImg");
+const scoredImg = document.getElementById("scoredImg");
 
-const idealOverlay = document.getElementById("idealOverlay");
-const scoredOverlay = document.getElementById("scoredOverlay");
+const shots = document.getElementById("shots");
+const total = document.getElementById("total");
+const jsonOut = document.getElementById("jsonOut");
+const copyBtn = document.getElementById("copyBtn");
+
+const modalImg = document.getElementById("modalImg");
+const imgModal = document.getElementById("imgModal");
 
 document.getElementById("fileInput").addEventListener("change", async e => {
   const file = e.target.files[0];
@@ -16,16 +22,18 @@ document.getElementById("fileInput").addEventListener("change", async e => {
   const form = new FormData();
   form.append("image", file);
 
-  const res = await fetch("/upload", { method: "POST", body: form });
-  const data = await res.json();
+  const res = await fetch("/upload", {
+    method: "POST",
+    body: form
+  });
 
+  const data = await res.json();
   currentFile = data.filename;
 
   preview.src = data.image_url;
   preview.classList.remove("d-none");
 
-  document.getElementById("baseImg").src = data.image_url;
-
+  baseImg.src = data.image_url;
   processBtn.disabled = false;
 });
 
@@ -41,22 +49,11 @@ processBtn.onclick = async () => {
   shots.innerText = data.stats.shots;
   total.innerText = data.stats.total_score;
 
+  baseImg.src = data.images.overlay;
   idealImg.src = data.images.ideal;
   scoredImg.src = data.images.scored;
 
-  idealOverlay.src = data.images.ideal;
-  scoredOverlay.src = data.images.scored;
-
   jsonOut.textContent = JSON.stringify(data.json, null, 2);
-};
-
-// Overlay toggles
-idealCheck.onchange = () => {
-  idealOverlay.classList.toggle("d-none", !idealCheck.checked);
-};
-
-scoredCheck.onchange = () => {
-  scoredOverlay.classList.toggle("d-none", !scoredCheck.checked);
 };
 
 // Copy JSON
@@ -73,4 +70,6 @@ document.addEventListener("click", e => {
   imgModal.classList.remove("d-none");
 });
 
-imgModal.onclick = () => imgModal.classList.add("d-none");
+imgModal.onclick = () => {
+  imgModal.classList.add("d-none");
+};
