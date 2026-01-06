@@ -38,22 +38,38 @@ document.getElementById("fileInput").addEventListener("change", async e => {
 });
 
 processBtn.onclick = async () => {
-  const res = await fetch("/process", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ filename: currentFile })
-  });
+  // Save original button state
+  const originalText = processBtn.innerHTML;
+  const originalDisabled = processBtn.disabled;
 
-  const data = await res.json();
+  // Show spinner and update text
+  processBtn.disabled = true;
+  processBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Обробляється';
 
-  shots.innerText = data.stats.shots;
-  total.innerText = data.stats.total_score;
+  try {
+    const res = await fetch("/process", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: currentFile })
+    });
 
-  baseImg.src = data.images.overlay;
-  idealImg.src = data.images.ideal;
-  scoredImg.src = data.images.scored;
+    const data = await res.json();
 
-  jsonOut.textContent = JSON.stringify(data.json, null, 2);
+    shots.innerText = data.stats.shots;
+    total.innerText = data.stats.total_score;
+
+    baseImg.src = data.images.overlay;
+    idealImg.src = data.images.ideal;
+    scoredImg.src = data.images.scored;
+
+    jsonOut.textContent = JSON.stringify(data.json, null, 2);
+  } catch (error) {
+    console.error("Processing error:", error);
+  } finally {
+    // Restore button state
+    processBtn.innerHTML = originalText;
+    processBtn.disabled = originalDisabled;
+  }
 };
 
 // Copy JSON
