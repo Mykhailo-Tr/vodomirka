@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-semibold" href="{{ url_for('index') }}">
+      <i class="bi bi-bullseye me-1"></i> ISSF Target Scorer
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link{% if request.endpoint == 'index' %} active{% endif %}"
+             href="{{ url_for('index') }}">
+            <i class="bi bi-camera-reels me-1"></i> Scoring
+          </a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle{% if request.blueprint == 'management' %} active{% endif %}"
+             href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-people me-1"></i> Management
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="managementDropdown">
+            <li><a class="dropdown-item" href="{{ url_for('management.dashboard') }}">Overview</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{{ url_for('management.athletes_list') }}">Athletes</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('management.rifles_list') }}">Rifles</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('management.jackets_list') }}">Jackets</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('management.scopes_list') }}">Scopes</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('management.ranks_list') }}">Ranks</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('management.locations_list') }}">Locations</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+

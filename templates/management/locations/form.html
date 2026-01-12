@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% if location %}
+  {% set page_title = "Edit location" %}
+{% else %}
+  {% set page_title = "New location" %}
+{% endif %}
+
+{% block title %}{{ page_title }} · Locations{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">{{ page_title }}</h1>
+  <a href="{{ url_for('management.locations_list') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Back
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-12">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input type="text" name="name" class="form-control"
+               value="{{ (location.name if location else '') | default('') }}" required>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Note</label>
+        <textarea name="note" class="form-control" rows="3">{{ (location.note if location else '') | default('') }}</textarea>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-save me-1"></i> Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

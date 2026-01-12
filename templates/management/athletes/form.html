@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% if athlete %}
+  {% set page_title = "Edit athlete" %}
+{% else %}
+  {% set page_title = "New athlete" %}
+{% endif %}
+
+{% block title %}{{ page_title }} · Athletes{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">{{ page_title }}</h1>
+  <a href="{{ url_for('management.athletes_list') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Back
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label">First name <span class="text-danger">*</span></label>
+        <input type="text" name="first_name" class="form-control"
+               value="{{ (athlete.first_name if athlete else '') | default('') }}" required>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Last name</label>
+        <input type="text" name="last_name" class="form-control"
+               value="{{ (athlete.last_name if athlete else '') | default('') }}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Gender <span class="text-danger">*</span></label>
+        <select name="gender" class="form-select" required>
+          <option value="">Select gender…</option>
+          {% set g = athlete.gender if athlete else '' %}
+          <option value="male" {% if g == 'male' %}selected{% endif %}>Male</option>
+          <option value="female" {% if g == 'female' %}selected{% endif %}>Female</option>
+          <option value="other" {% if g == 'other' %}selected{% endif %}>Other</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Date of birth</label>
+        <input type="date" name="date_of_birth" class="form-control"
+               value="{% if athlete and athlete.date_of_birth %}{{ athlete.date_of_birth.strftime('%Y-%m-%d') }}{% endif %}">
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Rank</label>
+        <select name="rank_id" class="form-select">
+          <option value="">No rank</option>
+          {% for rank in ranks %}
+            <option value="{{ rank.id }}"
+              {% if athlete and athlete.rank_id == rank.id %}selected{% endif %}>
+              {{ rank.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Team</label>
+        <input type="text" name="team" class="form-control"
+               value="{{ (athlete.team if athlete else '') | default('') }}">
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Rifle <span class="text-danger">*</span></label>
+        <select name="rifle_id" class="form-select" required>
+          <option value="">Select rifle…</option>
+          {% for rifle in rifles %}
+            <option value="{{ rifle.id }}"
+              {% if athlete and athlete.rifle_id == rifle.id %}selected{% endif %}>
+              {{ rifle.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Jacket <span class="text-danger">*</span></label>
+        <select name="jacket_id" class="form-select" required>
+          <option value="">Select jacket…</option>
+          {% for jacket in jackets %}
+            <option value="{{ jacket.id }}"
+              {% if athlete and athlete.jacket_id == jacket.id %}selected{% endif %}>
+              {{ jacket.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label">Location</label>
+        <select name="location_id" class="form-select">
+          <option value="">No preferred location</option>
+          {% for location in locations %}
+            <option value="{{ location.id }}"
+              {% if athlete and athlete.location_id == location.id %}selected{% endif %}>
+              {{ location.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Phone number</label>
+        <input type="tel" name="phone_number" class="form-control"
+               value="{{ (athlete.phone_number if athlete else '') | default('') }}">
+      </div>
+
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-save me-1"></i> Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

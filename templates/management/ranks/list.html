@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Ranks · Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-0">Ranks</h1>
+    <small class="text-muted">Sport ranks / classifications of athletes.</small>
+  </div>
+  <a href="{{ url_for('management.ranks_create') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i> New rank
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+      <tr>
+        <th class="w-25">Name</th>
+        <th>Note</th>
+        <th class="text-end">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for rank in ranks %}
+        <tr>
+          <td>{{ rank.name }}</td>
+          <td class="text-muted">{{ rank.note or "—" }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('management.ranks_edit', rank_id=rank.id) }}"
+               class="btn btn-sm btn-outline-secondary me-1">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <form method="post"
+                  action="{{ url_for('management.ranks_delete', rank_id=rank.id) }}"
+                  class="d-inline"
+                  onsubmit="return confirm('Delete this rank?');">
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="3" class="text-center text-muted py-4">
+            No ranks created yet.
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

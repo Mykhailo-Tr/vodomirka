@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% if rifle %}
+  {% set page_title = "Edit rifle" %}
+{% else %}
+  {% set page_title = "New rifle" %}
+{% endif %}
+
+{% block title %}{{ page_title }} · Rifles{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">{{ page_title }}</h1>
+  <a href="{{ url_for('management.rifles_list') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Back
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input type="text" name="name" class="form-control"
+               value="{{ (rifle.name if rifle else '') | default('') }}" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Scope <span class="text-danger">*</span></label>
+        <select name="scope_id" class="form-select" required>
+          <option value="">Select scope…</option>
+          {% for scope in scopes %}
+            <option value="{{ scope.id }}"
+              {% if rifle and rifle.scope_id == scope.id %}selected{% endif %}>
+              {{ scope.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Note</label>
+        <textarea name="note" class="form-control" rows="3">{{ (rifle.note if rifle else '') | default('') }}</textarea>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-save me-1"></i> Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

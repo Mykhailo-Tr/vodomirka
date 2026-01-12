@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Scopes · Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-0">Scopes</h1>
+    <small class="text-muted">Optical scopes used on rifles.</small>
+  </div>
+  <a href="{{ url_for('management.scopes_create') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i> New scope
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+      <tr>
+        <th class="w-25">Name</th>
+        <th>Note</th>
+        <th class="text-end">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for scope in scopes %}
+        <tr>
+          <td>{{ scope.name }}</td>
+          <td class="text-muted">{{ scope.note or "—" }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('management.scopes_edit', scope_id=scope.id) }}"
+               class="btn btn-sm btn-outline-secondary me-1">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <form method="post"
+                  action="{{ url_for('management.scopes_delete', scope_id=scope.id) }}"
+                  class="d-inline"
+                  onsubmit="return confirm('Delete this scope?');">
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="3" class="text-center text-muted py-4">
+            No scopes created yet.
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+

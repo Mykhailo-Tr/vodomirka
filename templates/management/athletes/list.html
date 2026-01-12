@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Athletes · Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h4 mb-0">Athletes</h1>
+    <small class="text-muted">Shooters participating in sessions.</small>
+  </div>
+  <a href="{{ url_for('management.athletes_create') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg me-1"></i> New athlete
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+      <tr>
+        <th>Name</th>
+        <th>Gender</th>
+        <th>Rank</th>
+        <th>Rifle</th>
+        <th>Jacket</th>
+        <th>Team</th>
+        <th>Phone</th>
+        <th class="text-end">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for athlete in athletes %}
+        <tr>
+          <td>
+            {{ athlete.first_name }}
+            {% if athlete.last_name %}{{ athlete.last_name }}{% endif %}
+          </td>
+          <td class="text-muted text-capitalize">{{ athlete.gender }}</td>
+          <td class="text-muted">{{ athlete.rank.name if athlete.rank else "—" }}</td>
+          <td class="text-muted">{{ athlete.rifle.name }}</td>
+          <td class="text-muted">{{ athlete.jacket.name }}</td>
+          <td class="text-muted">{{ athlete.team or "—" }}</td>
+          <td class="text-muted">{{ athlete.phone_number or "—" }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('management.athletes_edit', athlete_id=athlete.id) }}"
+               class="btn btn-sm btn-outline-secondary me-1">
+              <i class="bi bi-pencil"></i>
+            </a>
+            <form method="post"
+                  action="{{ url_for('management.athletes_delete', athlete_id=athlete.id) }}"
+                  class="d-inline"
+                  onsubmit="return confirm('Delete this athlete?');">
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-trash"></i>
+              </button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="8" class="text-center text-muted py-4">
+            No athletes created yet.
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

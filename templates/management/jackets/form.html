@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% if jacket %}
+  {% set page_title = "Edit jacket" %}
+{% else %}
+  {% set page_title = "New jacket" %}
+{% endif %}
+
+{% block title %}{{ page_title }} · Jackets{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h4 mb-0">{{ page_title }}</h1>
+  <a href="{{ url_for('management.jackets_list') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i> Back
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form method="post" class="row g-3">
+      <div class="col-12">
+        <label class="form-label">Name <span class="text-danger">*</span></label>
+        <input type="text" name="name" class="form-control"
+               value="{{ (jacket.name if jacket else '') | default('') }}" required>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Note</label>
+        <textarea name="note" class="form-control" rows="3">{{ (jacket.note if jacket else '') | default('') }}</textarea>
+      </div>
+
+      <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-save me-1"></i> Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
