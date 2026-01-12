@@ -9,6 +9,8 @@ static/snapshots/
 # --- environment variables ---
 .env
 
+instance/
+
 
 # --- Python ---
 __pycache__/
