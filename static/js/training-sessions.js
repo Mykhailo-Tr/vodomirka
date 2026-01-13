@@ -38,8 +38,8 @@
     // bind actions
     listEl.querySelectorAll('button[data-action="continue"]').forEach(b=> b.addEventListener('click', (e)=>{ const id = e.currentTarget.closest('tr').dataset.id; window.location.href = '/training/session/'+id; }));
     listEl.querySelectorAll('button[data-action="view"]').forEach(b=> b.addEventListener('click', (e)=>{ const id = e.currentTarget.closest('tr').dataset.id; window.location.href = '/training/session/'+id; }));
-    listEl.querySelectorAll('button[data-action="finish"]').forEach(b=> b.addEventListener('click', (e)=>{ pendingFinishId = e.currentTarget.closest('tr').dataset.id; new bootstrap.Modal(document.getElementById('confirmFinishModal')).show(); }));
-    listEl.querySelectorAll('button[data-action="delete"]').forEach(b=> b.addEventListener('click', (e)=>{ pendingDeleteId = e.currentTarget.closest('tr').dataset.id; new bootstrap.Modal(document.getElementById('confirmDeleteModal')).show(); }));
+    listEl.querySelectorAll('button[data-action="finish"]').forEach(b=> b.addEventListener('click', (e)=>{ pendingFinishId = e.currentTarget.closest('tr').dataset.id; const modalEl = document.getElementById('confirmFinishModal'); let modal = bootstrap.Modal.getInstance(modalEl); if(!modal) modal = new bootstrap.Modal(modalEl); modal.show(); }));
+    listEl.querySelectorAll('button[data-action="delete"]').forEach(b=> b.addEventListener('click', (e)=>{ pendingDeleteId = e.currentTarget.closest('tr').dataset.id; const modalEl = document.getElementById('confirmDeleteModal'); let modal = bootstrap.Modal.getInstance(modalEl); if(!modal) modal = new bootstrap.Modal(modalEl); modal.show(); }));
   }
 
   function renderPager(page, per_page, total){
@@ -60,7 +60,7 @@
     document.getElementById('confirm-finish-btn').disabled = true;
     try{
       const r = await fetch(`/training/session/${id}/finish`, {method:'POST'});
-      if(r.ok){ new bootstrap.Modal(document.getElementById('confirmFinishModal')).hide(); fetchSessions(); }
+      if(r.ok){ const modalEl = document.getElementById('confirmFinishModal'); const modal = bootstrap.Modal.getInstance(modalEl); if(modal) modal.hide(); fetchSessions(); }
     }finally{ document.getElementById('confirm-finish-btn').disabled = false; }
   }
 
@@ -70,7 +70,7 @@
     document.getElementById('confirm-delete-session-btn').disabled = true;
     try{
       const r = await fetch(`/training/session/${id}/delete`, {method:'POST'});
-      if(r.ok){ new bootstrap.Modal(document.getElementById('confirmDeleteModal')).hide(); fetchSessions(); }
+      if(r.ok){ const modalEl = document.getElementById('confirmDeleteModal'); const modal = bootstrap.Modal.getInstance(modalEl); if(modal) modal.hide(); fetchSessions(); }
     }finally{ document.getElementById('confirm-delete-session-btn').disabled = false; }
   }
 

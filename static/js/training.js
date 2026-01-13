@@ -335,7 +335,7 @@
         const id = b.dataset.id;
         // show confirmation modal
         $id('confirm-delete-btn').dataset.id = id;
-        new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        const delModalEl = document.getElementById('deleteModal'); let delModal = bootstrap.Modal.getInstance(delModalEl); if(!delModal) delModal = new bootstrap.Modal(delModalEl); delModal.show();
       });
     });
 
@@ -414,7 +414,7 @@
       }
     }
 
-    new bootstrap.Modal(document.getElementById('imageModal')).show();
+    const imageModalEl = document.getElementById('imageModal'); let imageModal = bootstrap.Modal.getInstance(imageModalEl); if(!imageModal) imageModal = new bootstrap.Modal(imageModalEl); imageModal.show();
   }
 
   async function openShotModal(shotId){
@@ -425,7 +425,7 @@
     $id('shot-final-score').value = sh.final_score || sh.auto_score || 0;
     $id('shot-note').value = '';
     $id('save-shot-btn').dataset.id = shotId;
-    new bootstrap.Modal(document.getElementById('shotModal')).show();
+    const shotModalEl = document.getElementById('shotModal'); let shotModal = bootstrap.Modal.getInstance(shotModalEl); if(!shotModal) shotModal = new bootstrap.Modal(shotModalEl); shotModal.show();
   }
 
   async function saveShot(){
@@ -478,13 +478,11 @@
     $id('save-shot-btn').addEventListener('click', saveShot);
 
     // delete modal confirm
-    if($id('confirm-delete-btn')) $id('confirm-delete-btn').addEventListener('click', (e)=>{ deleteImageById(e.currentTarget.dataset.id); });
+    const confirmDeleteBtn = $id('confirm-delete-btn');
+    if(confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', (e)=>{ deleteImageById(e.currentTarget.dataset.id); });
 
     // clear messages on modal close
     const delModalEl = document.getElementById('deleteModal'); if(delModalEl){ delModalEl.addEventListener('hidden.bs.modal', ()=> clearMessages()); }
-
-    // delete modal confirm
-    if($id('confirm-delete-btn')) $id('confirm-delete-btn').addEventListener('click', (e)=>{ deleteImageById(e.currentTarget.dataset.id); });
 
     // file preview on choose
     const fileInput = $id('file-input');
