@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Training - ISSF Target Scorer{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 mb-3">
+      <h3>Training</h3>
+      <p class="text-muted">Create training sessions, upload images, persist shots and perform manual corrections.</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Left: Session & Upload -->
+    <div class="col-md-3">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">Session</h5>
+
+          <div class="mb-2">
+            <label class="form-label">Name</label>
+            <input id="session-name" class="form-control" placeholder="Session name" />
+          </div>
+
+          <div id="athletes-list" class="mb-2">
+            <label class="form-label">Athletes</label>
+            <div class="d-flex flex-column">
+              {% for a in athletes %}
+                <div class="form-check">
+                  <input class="form-check-input athlete-checkbox" type="checkbox" value="{{ a.id }}" id="athlete-{{ a.id }}">
+                  <label class="form-check-label" for="athlete-{{ a.id }}">{{ a.first_name }} {{ a.last_name or '' }}</label>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 mb-2">
+            <button id="start-session" class="btn btn-primary">Start Session</button>
+            <button id="finish-session" class="btn btn-outline-secondary" disabled>Finish Session</button>
+          </div>
+
+          <hr />
+
+          <h6>Upload / Snapshot</h6>
+
+          <div id="uploadBlock" class="d-none">
+            <div class="mb-2">
+              <input type="file" id="file-input" class="form-control" accept="image/*" />
+            </div>
+
+            <div id="cameraBlock">
+              <div class="mb-2">
+                <select id="trainingCameraSelect" class="form-select form-select-sm mb-2">
+                  <option value="">— Select camera —</option>
+                </select>
+                <div id="trainingCameraPreview" class="preview-box d-none">
+                  <video id="trainingCameraVideo" autoplay playsinline></video>
+                  <canvas id="trainingCameraCanvas" class="d-none"></canvas>
+                </div>
+                <div id="trainingCameraControls" class="d-none mt-2">
+                  <button id="trainingCaptureBtn" class="btn btn-outline-success btn-sm w-100">Capture</button>
+                  <button id="trainingStopCameraBtn" class="btn btn-outline-danger btn-sm w-100 mt-1">Stop</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <img id="trainingPreview" class="img-fluid border d-none" alt="preview" />
+            </div>
+
+            <div class="mb-2 d-flex gap-2">
+              <button id="upload-btn" class="btn btn-sm btn-success">Upload file</button>
+              <button id="open-camera-btn" class="btn btn-sm btn-outline-primary">Open Camera</button>
+            </div>
+
+            <div id="upload-feedback" class="mt-2 text-muted small"></div>
+            <div id="upload-messages" class="mt-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h6>Session Info</h6>
+          <p id="session-info" class="small text-muted">No session started</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center: Image list -->
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Images</h5>
+          <div id="images-list" class="list-group"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Statistics -->
+    <div class="col-md-3">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6>Statistics</h6>
+          <ul class="list-unstyled small" id="stats-list">
+            <li>Total shots: <span id="stat-shots">0</span></li>
+            <li>Total score: <span id="stat-score">0</span></li>
+          </ul>
+          <hr />
+          <div class="d-flex justify-content-between align-items-center">
+            <h6 class="mt-2 mb-0">Score progression</h6>
+            <div class="ms-2">
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="athleteFilterBtn" data-bs-toggle="dropdown" aria-expanded="false">Filter</button>
+                <div class="dropdown-menu p-2" aria-labelledby="athleteFilterBtn" style="min-width:220px;">
+                  <div id="athlete-filter-list" class="d-flex flex-column small"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="trainingChart" style="height:140px"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h6>Session Info</h6>
+          <p id="session-info-right" class="small text-muted">No session started</p>
+          <div id="session-athletes-list" class="small text-muted"></div>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-body">
+          <h6>Session JSON</h6>
+          <pre id="session-json" style="max-height:200px;overflow:auto;">{}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Image modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel">Image</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-8">
+            <img id="modal-main-img" src="" class="img-fluid border mb-2" alt="image" />
+            <div id="modal-thumbs" class="d-flex gap-2">
+              <!-- thumbnails injected here -->
+            </div>
+          </div>
+          <div class="col-md-4">
+            <h6>Shots</h6>
+            <div id="modal-shots" class="list-group mb-3"></div>
+            <h6>JSON</h6>
+            <pre id="modal-json" class="small" style="max-height:220px;overflow:auto;"></pre>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <small id="modal-image-filename" class="text-muted me-auto"></small>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Shot modal -->
+<!-- Shot modal -->
+<div class="modal fade" id="shotModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="shotModalLabel">Shot</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="shot-details"></div>
+        <div class="mb-2">
+          <label class="form-label">Final score</label>
+          <input id="shot-final-score" type="number" class="form-control" />
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Note</label>
+          <input id="shot-note" type="text" class="form-control" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="save-shot-btn" type="button" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete confirmation modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this image and all its shots?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm-delete-btn" type="button" class="btn btn-danger">Delete</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="{{ url_for('static', filename='js/training.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/training.css') }}">
+{% endblock %}

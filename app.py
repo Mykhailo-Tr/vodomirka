@@ -22,6 +22,14 @@ def create_app() -> Flask:
     # Register blueprints
     app.register_blueprint(management_bp, url_prefix="/management")
 
+    # Training blueprint (separate UI and APIs for training mode)
+    try:
+        from training import training_bp
+        app.register_blueprint(training_bp, url_prefix="/training")
+    except Exception:
+        # Keep app import-safe even if training module has issues
+        pass
+
     # Ensure filesystem structure exists
     upload_dir = "static/uploads"
     snapshot_dir = "static/snapshots"
@@ -32,6 +40,91 @@ def create_app() -> Flask:
     # Create database tables if they do not exist yet
     with app.app_context():
         db.create_all()
+
+        # Lightweight migration: add missing columns to existing tables when necessary.
+        # This keeps local deployments working without Alembic while being safe (no-op if columns exist).
+        try:
+            from sqlalchemy import text
+
+            with db.engine.begin() as conn:
+                def cols_for(tbl: str) -> set:
+                    res = conn.execute(text(f"PRAGMA table_info('{tbl}')")).mappings().all()
+                    return {r['name'] for r in res} if res else set()
+
+                # Shots: ensure all expected columns exist. Handle legacy `idx` column name.
+                shots_expected = [
+                    ("idx", "INTEGER DEFAULT 0"),
+                    ("center_px", "JSON"),
+                    ("dx_mm", "REAL DEFAULT 0"),
+                    ("dy_mm", "REAL DEFAULT 0"),
+                    ("dist_mm", "REAL DEFAULT 0"),
+                    ("bullet_radius_px", "REAL DEFAULT 0"),
+                    ("auto_score", "INTEGER DEFAULT 0"),
+                    ("final_score", "INTEGER"),
+                    ("metadata_json", "JSON"),
+                    ("created_at", "DATETIME")
+                ]
+
+                existing = cols_for('shots')
+                if existing:
+                    # If `idx` is missing but `shot_index` exists, create `idx` and copy values
+                    if 'idx' not in existing and 'shot_index' in existing:
+                        conn.execute(text("ALTER TABLE shots ADD COLUMN idx INTEGER DEFAULT 0"))
+                        conn.execute(text("UPDATE shots SET idx = shot_index WHERE idx IS NULL"))
+                        existing.add('idx')
+
+                    for name, ctype in shots_expected:
+                        if name not in existing:
+                            conn.execute(text(f"ALTER TABLE shots ADD COLUMN {name} {ctype}"))
+                    # Ensure 'idx' has a default for future inserts
+                    if 'idx' in existing:
+                        try:
+                            conn.execute(text("UPDATE shots SET idx = 0 WHERE idx IS NULL"))
+                        except Exception:
+                            pass
+
+                # Images: add overlay/scored/ideal paths and created_at & athlete_id if missing
+                images_expected = [
+                    ("overlay_path", "TEXT"),
+                    ("scored_path", "TEXT"),
+                    ("ideal_path", "TEXT"),
+                    ("created_at", "DATETIME"),
+                    ("athlete_id", "INTEGER")
+                ]
+                existing = cols_for('images')
+                if existing:
+                    for name, ctype in images_expected:
+                        if name not in existing:
+                            conn.execute(text(f"ALTER TABLE images ADD COLUMN {name} {ctype}"))
+
+                # Sessions: add mode, started_at, finished_at, name if missing
+                sessions_expected = [
+                    ("mode", "TEXT DEFAULT 'training'"),
+                    ("started_at", "DATETIME"),
+                    ("finished_at", "DATETIME"),
+                    ("name", "TEXT")
+                ]
+                existing = cols_for('sessions')
+                if existing:
+                    for name, ctype in sessions_expected:
+                        if name not in existing:
+                            conn.execute(text(f"ALTER TABLE sessions ADD COLUMN {name} {ctype}"))
+
+                # Shot revisions: ensure audit fields exist
+                rev_expected = [
+                    ("prev_score", "INTEGER DEFAULT 0"),
+                    ("new_score", "INTEGER DEFAULT 0"),
+                    ("note", "TEXT"),
+                    ("changed_at", "DATETIME")
+                ]
+                existing = cols_for('shot_revisions')
+                if existing:
+                    for name, ctype in rev_expected:
+                        if name not in existing:
+                            conn.execute(text(f"ALTER TABLE shot_revisions ADD COLUMN {name} {ctype}"))
+        except Exception:
+            # Avoid crashing the app if migration fails; manual migration may be required in production.
+            pass
 
     # Routes for scoring functionality remain attached to this app instance
 
