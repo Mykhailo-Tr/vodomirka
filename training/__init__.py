@@ -63,9 +63,30 @@ def image_detail(image_id):
     img = Image.query.get_or_404(image_id)
     d = img.to_dict()
     d["shots"] = [s.to_dict() for s in img.shots]
+
+    # Normalize returned paths (replace backslashes, ensure leading slash) and verify file existence.
+    def _check_path(p):
+        if not p:
+            return None
+        p = p.replace('\\', '/')
+        if not p.startswith('/'):
+            p = '/' + p
+        fs = os.path.join(current_app.root_path, p.lstrip('/'))
+        return p if os.path.exists(fs) else None
+
+    for key in ('original_path','overlay_path','scored_path','ideal_path'):
+        d[key] = _check_path(d.get(key))
+
+    # Provide fallbacks: if scored/ideal are missing but overlay exists, use overlay image for display
+    if not d.get('scored_path') and d.get('overlay_path'):
+        d['scored_path'] = d['overlay_path']
+    if not d.get('ideal_path') and d.get('overlay_path'):
+        d['ideal_path'] = d['overlay_path']
+
     # Include athlete info if present
     if img.athlete:
         d['athlete'] = { 'id': img.athlete.id, 'name': f"{img.athlete.first_name} {img.athlete.last_name or ''}".strip() }
+    current_app.logger.debug(f"image_detail paths for {img.id}: overlay={d.get('overlay_path')}, scored={d.get('scored_path')}, ideal={d.get('ideal_path')}")
     return jsonify(d)
 
 
@@ -110,24 +131,28 @@ def save_image_and_shots():
     def norm(p):
         if not p:
             return p
-        return p if p.startswith("/") else f"/{p}"
+        # normalize separators and ensure absolute path (leading '/')
+        p = p.replace('\\', '/')
+        return p if p.startswith('/') else f'/{p}'
 
     out_overlay = norm(out_overlay)
     out_scored = norm(out_scored)
     out_ideal = norm(out_ideal)
     upload_orig = norm(upload_orig)
 
+    # Use overlay as fallback for scored/ideal if they are not provided
+    out_scored = out_scored or out_overlay
+    out_ideal = out_ideal or out_overlay
+
     # allow passing athlete_id to assign image to an athlete
     athlete_id = data.get('athlete_id') if data else None
     img = Image(filename=filename, original_path=upload_orig, overlay_path=out_overlay, scored_path=out_scored, session=sess, athlete_id=athlete_id)
-    # store ideal path if model provides it
-    if out_ideal:
-        img.scored_path = img.scored_path or None
-        # attach as attribute - add column support in model
-        try:
-            img.ideal_path = out_ideal
-        except Exception:
-            pass
+    # store ideal path
+    try:
+        img.ideal_path = out_ideal
+    except Exception:
+        # If DB doesn't have the column yet, ignore
+        pass
     db.session.add(img)
     db.session.flush()  # get id
 

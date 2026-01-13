@@ -211,13 +211,22 @@ def score_image(path):
 
     cv2.imwrite(out_overlay, overlay_img)
 
+    # Normalize paths for web use (forward slashes, leading '/')
+    def webpath(p):
+        if not p:
+            return None
+        p = p.replace('\\', '/')
+        return p if p.startswith('/') else '/' + p
+
     return {
         "center_px":center.astype(int).tolist(),
         "shots":shots,
         "shots_count":len(shots),
         "total_score":total,
         "images": {
-            "overlay": out_overlay
+            "overlay": webpath(out_overlay),
+            "scored": webpath(out_real),
+            "ideal": webpath(out_ideal),
         }
     }
 

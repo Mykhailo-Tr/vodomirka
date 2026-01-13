@@ -2,8 +2,10 @@
 #images-list img { border-radius: 4px; max-width:100%; height: auto; }
 .preview-box { border: 1px solid #e9ecef; padding: 6px; border-radius:6px; background:#fafafa; }
 #modal-main-img { max-height: 70vh; display:block; margin:0 auto; }
-#modal-thumbs img { width:80px; height:60px; object-fit:cover; border:1px solid #ddd; border-radius:4px; transition: transform .15s ease; }
-#modal-thumbs img:hover{ transform: scale(1.06); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+#modal-thumbs .thumb-figure { display:inline-flex; flex-direction:column; align-items:center; }
+#modal-thumbs .thumb-img { width:80px; height:60px; object-fit:cover; border:1px solid #ddd; border-radius:4px; transition: transform .15s ease, box-shadow .15s ease; }
+#modal-thumbs .thumb-img:hover{ transform: scale(1.06); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+#modal-thumbs .thumb-img.active{ border-color: #0d6efd; box-shadow: 0 6px 18px rgba(13,110,253,0.18); transform: scale(1.03); }
 #trainingPreview, #upload-preview { max-width:100%; height:auto; display:block; transition: opacity .2s ease; }
 .card .card-title{ margin-bottom:0.5rem; }
 #images-list .list-group-item { cursor: pointer; transition: background .12s ease, transform .08s ease; }

@@ -343,9 +343,16 @@
     const res = await fetch(`/training/image/${id}`);
     if(!res.ok) return;
     const img = await res.json();
-    $id('modal-main-img').src = img.overlay_path || img.scored_path || img.original_path || img.original_path;
+    console.log('Image detail:', img);
     $id('imageModalLabel').textContent = img.filename || 'Image';
     $id('modal-json').textContent = JSON.stringify(img, null, 2);
+
+    // show which image views are available in the modal footer (helpful for debugging)
+    const availableKeys = ['overlay_path','scored_path','original_path','ideal_path'];
+    const labels = {overlay_path:'Overlay', scored_path:'Scored', original_path:'Original', ideal_path:'Ideal'};
+    const available = availableKeys.filter(k=>!!img[k]);
+    const badgeHtml = available.length ? available.map(k=>`<span class="badge bg-secondary me-1">${labels[k]}</span>`).join(' ') : '<span class="small text-muted">No alternate views available</span>';
+    $id('modal-image-filename').innerHTML = badgeHtml;
 
     const ms = $id('modal-shots'); ms.innerHTML='';
     (img.shots || []).forEach(sh => {
@@ -370,8 +377,38 @@
         const j = await r.json(); if(j.ok){ finalEl.textContent = j.shot.final_score; showMessage('Shot updated', 'success'); await refreshImages(); updateTrainingChart(); }
       });
     }));
-    // thumbnails
-    const thumbs = $id('modal-thumbs'); if(thumbs){ thumbs.innerHTML=''; ['overlay_path','scored_path','original_path','ideal_path'].forEach(k=>{ if(img[k]){ const im = document.createElement('img'); im.src = img[k]; im.className='me-1'; im.addEventListener('click', ()=>{ $id('modal-main-img').src = img[k]; }); thumbs.appendChild(im); } }); }
+
+    // thumbnails (show Overlay, Scored, Original, Ideal with labels and active highlighting)
+    const thumbs = $id('modal-thumbs'); if(thumbs){
+      thumbs.innerHTML='';
+      const keys = ['overlay_path','scored_path','original_path','ideal_path'];
+      const labels = {overlay_path:'Overlay', scored_path:'Scored', original_path:'Original', ideal_path:'Ideal'};
+      let selectedKey = null;
+      keys.forEach(k=>{
+        if(img[k]){
+          const fig = document.createElement('div'); fig.className = 'thumb-figure me-1 text-center';
+          const im = document.createElement('img');
+          im.src = img[k]; im.className = 'thumb-img'; im.style.cursor = 'pointer'; im.dataset.key = k; im.title = labels[k];
+          im.addEventListener('click', ()=>{
+            $id('modal-main-img').src = img[k];
+            thumbs.querySelectorAll('.thumb-img').forEach(t=>t.classList.remove('active'));
+            im.classList.add('active');
+          });
+          const cap = document.createElement('div'); cap.className = 'small text-muted'; cap.style.fontSize = '11px'; cap.textContent = labels[k];
+          fig.appendChild(im); fig.appendChild(cap);
+          thumbs.appendChild(fig);
+          if(!selectedKey) selectedKey = k;
+        }
+      });
+      // set default main image to first available (overlay -> scored -> original -> ideal)
+      if(selectedKey){
+        $id('modal-main-img').src = img[selectedKey];
+        const active = thumbs.querySelector(`.thumb-img[data-key="${selectedKey}"]`);
+        if(active) active.classList.add('active');
+      } else {
+        $id('modal-main-img').src = img.original_path || '';
+      }
+    }
 
     new bootstrap.Modal(document.getElementById('imageModal')).show();
   }
