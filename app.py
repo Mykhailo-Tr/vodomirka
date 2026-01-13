@@ -22,6 +22,14 @@ def create_app() -> Flask:
     # Register blueprints
     app.register_blueprint(management_bp, url_prefix="/management")
 
+    # Competition blueprint
+    try:
+        from competition import competition_bp
+        app.register_blueprint(competition_bp, url_prefix="/competition")
+    except Exception:
+        # Keep app import-safe even if competition module has issues
+        pass
+
     # Training blueprint (separate UI and APIs for training mode)
     try:
         from training import training_bp
@@ -122,6 +130,98 @@ def create_app() -> Flask:
                     for name, ctype in rev_expected:
                         if name not in existing:
                             conn.execute(text(f"ALTER TABLE shot_revisions ADD COLUMN {name} {ctype}"))
+
+                # Competition mode tables
+                exercises_expected = [
+                    ("id", "INTEGER PRIMARY KEY"),
+                    ("name", "VARCHAR(100) NOT NULL"),
+                    ("description", "TEXT"),
+                    ("total_series", "INTEGER NOT NULL"),
+                    ("shots_per_series", "INTEGER NOT NULL"),
+                    ("timing_type", "VARCHAR(20) NOT NULL DEFAULT 'fixed'"),
+                    ("is_system", "BOOLEAN NOT NULL DEFAULT 0"),
+                    ("created_at", "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP")
+                ]
+                
+                # Create exercises table if it doesn't exist
+                if not conn.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='exercises'")).scalar():
+                    columns = ", ".join([f"{name} {ctype}" for name, ctype in exercises_expected])
+                    conn.execute(text(f"CREATE TABLE exercises ({columns})"))
+
+                competitions_expected = [
+                    ("id", "INTEGER PRIMARY KEY"),
+                    ("name", "VARCHAR(200) NOT NULL"),
+                    ("status", "VARCHAR(20) NOT NULL DEFAULT 'draft'"),
+                    ("started_at", "DATETIME"),
+                    ("finished_at", "DATETIME"),
+                    ("created_at", "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"),
+                    ("exercise_id", "INTEGER NOT NULL REFERENCES exercises(id)")
+                ]
+                
+                if not conn.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='competitions'")).scalar():
+                    columns = ", ".join([f"{name} {ctype}" for name, ctype in competitions_expected])
+                    conn.execute(text(f"CREATE TABLE competitions ({columns})"))
+
+                competition_athletes_expected = [
+                    ("id", "INTEGER PRIMARY KEY"),
+                    ("competition_id", "INTEGER NOT NULL REFERENCES competitions(id)"),
+                    ("athlete_id", "INTEGER NOT NULL REFERENCES athletes(id)")
+                ]
+                
+                if not conn.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='competition_athletes'")).scalar():
+                    columns = ", ".join([f"{name} {ctype}" for name, ctype in competition_athletes_expected])
+                    conn.execute(text(f"CREATE TABLE competition_athletes ({columns})"))
+
+                series_expected = [
+                    ("id", "INTEGER PRIMARY KEY"),
+                    ("series_number", "INTEGER NOT NULL"),
+                    ("status", "VARCHAR(20) NOT NULL DEFAULT 'active'"),
+                    ("started_at", "DATETIME"),
+                    ("finished_at", "DATETIME"),
+                    ("created_at", "DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"),
+                    ("competition_athlete_id", "INTEGER NOT NULL REFERENCES competition_athletes(id)"),
+                    ("session_id", "INTEGER NOT NULL REFERENCES sessions(id)")
+                ]
+                
+                if not conn.execute(text("SELECT name FROM sqlite_master WHERE type='table' AND name='series'")).scalar():
+                    columns = ", ".join([f"{name} {ctype}" for name, ctype in series_expected])
+                    conn.execute(text(f"CREATE TABLE series ({columns})"))
+
+                # Add series_id to images table if missing
+                images_existing = cols_for('images')
+                if images_existing and 'series_id' not in images_existing:
+                    conn.execute(text("ALTER TABLE images ADD COLUMN series_id INTEGER REFERENCES series(id)"))
+
+                # Add session_id to series table if missing
+                series_existing = cols_for('series')
+                if series_existing and 'session_id' not in series_existing:
+                    from datetime import datetime
+                    
+                    conn.execute(text("ALTER TABLE series ADD COLUMN session_id INTEGER NOT NULL DEFAULT 0"))
+                    # For existing series without sessions, create competition sessions
+                    existing_series = conn.execute(text("SELECT id, competition_athlete_id FROM series WHERE session_id = 0")).fetchall()
+                    for series_id, comp_athlete_id in existing_series:
+                        # Get competition info
+                        comp_info = conn.execute(text("""
+                            SELECT c.name, c.created_at
+                            FROM competition_athletes ca
+                            JOIN competitions c ON ca.competition_id = c.id
+                            WHERE ca.id = :comp_athlete_id
+                        """), {"comp_athlete_id": comp_athlete_id}).fetchone()
+                        
+                        if comp_info:
+                            # Create session for existing series
+                            session_result = conn.execute(text("""
+                                INSERT INTO sessions (mode, name, started_at, finished_at)
+                                VALUES ('competition', :name, :started_at, NULL)
+                                RETURNING id
+                            """), {
+                                "name": f"Competition: {comp_info.name}",
+                                "started_at": comp_info.created_at or datetime.utcnow()
+                            })
+                            session_id = session_result.scalar_one()
+                            conn.execute(text("UPDATE series SET session_id = :session_id WHERE id = :series_id"), 
+                                       {"session_id": session_id, "series_id": series_id})
         except Exception:
             # Avoid crashing the app if migration fails; manual migration may be required in production.
             pass

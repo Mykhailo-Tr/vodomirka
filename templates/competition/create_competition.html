@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Create Competition{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1><i class="bi bi-plus-circle me-2"></i>Create Competition</h1>
+      <a href="{{ url_for('competition.index') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Competitions
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Competition Details</h5>
+      </div>
+      <div class="card-body">
+        <form id="createCompetitionForm">
+          <div class="mb-3">
+            <label for="competitionName" class="form-label">Competition Name *</label>
+            <input type="text" class="form-control" id="competitionName" required 
+                   placeholder="e.g., Regional Championship 2024">
+          </div>
+          
+          <div class="mb-3">
+            <label for="exerciseId" class="form-label">Exercise *</label>
+            <select class="form-select" id="exerciseId" required>
+              <option value="">Select an exercise...</option>
+              {% for exercise in exercises %}
+                <option value="{{ exercise.id }}" 
+                        data-series="{{ exercise.total_series }}"
+                        data-shots="{{ exercise.shots_per_series }}"
+                        data-timing="{{ exercise.timing_type }}">
+                  {{ exercise.name }} 
+                  {% if exercise.is_system %}<span class="text-muted">(System)</span>{% endif %}
+                  - {{ exercise.total_series }}×{{ exercise.shots_per_series }} shots
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label class="form-label">Participating Athletes *</label>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header py-2">
+                    <h6 class="mb-0">Available Athletes</h6>
+                  </div>
+                  <div class="card-body p-2" style="max-height: 300px; overflow-y: auto;">
+                    {% for athlete in athletes %}
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{ athlete.id }}" 
+                               id="athlete_{{ athlete.id }}" name="athlete_ids">
+                        <label class="form-check-label" for="athlete_{{ athlete.id }}">
+                          <strong>{{ athlete.first_name }} {{ athlete.last_name or '' }}</strong>
+                          <small class="text-muted d-block">{{ athlete.rifle.name }} • {{ athlete.team or 'No team' }}</small>
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header py-2">
+                    <h6 class="mb-0">Selected Athletes <span id="selectedCount" class="badge bg-primary">0</span></h6>
+                  </div>
+                  <div class="card-body p-2" style="max-height: 300px; overflow-y: auto;">
+                    <div id="selectedAthletes">
+                      <p class="text-muted text-center">No athletes selected</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary" id="createBtn" disabled>
+              <i class="bi bi-check-circle me-1"></i> Create Competition
+            </button>
+            <a href="{{ url_for('competition.index') }}" class="btn btn-outline-secondary">
+              Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Exercise Details</h6>
+      </div>
+      <div class="card-body">
+        <div id="exerciseDetails">
+          <p class="text-muted">Select an exercise to see details</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-lightbulb me-2"></i>Competition Tips</h6>
+      </div>
+      <div class="card-body">
+        <ul class="small">
+          <li>Choose a meaningful competition name for easy identification</li>
+          <li>Select appropriate exercise based on skill level</li>
+          <li>Add at least 2 athletes for meaningful competition</li>
+          <li>Competition can be started when ready</li>
+          <li>Athletes can shoot in any order</li>
+          <li>Series can be finished early if needed</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const selectedAthletes = new Set();
+
+function updateSelectedAthletes() {
+  const checkboxes = document.querySelectorAll('input[name="athlete_ids"]:checked');
+  selectedAthletes.clear();
+  
+  const selectedDiv = document.getElementById('selectedAthletes');
+  const countBadge = document.getElementById('selectedCount');
+  
+  if (checkboxes.length === 0) {
+    selectedDiv.innerHTML = '<p class="text-muted text-center">No athletes selected</p>';
+    countBadge.textContent = '0';
+  } else {
+    let html = '';
+    checkboxes.forEach(checkbox => {
+      selectedAthletes.add(checkbox.value);
+      const label = document.querySelector(`label[for="${checkbox.id}"]`);
+      const athleteName = label.querySelector('strong').textContent;
+      html += `<div class="mb-2 p-2 bg-light rounded">
+        <strong>${athleteName}</strong>
+        <button type="button" class="btn btn-sm btn-outline-danger float-end" 
+                onclick="removeAthlete('${checkbox.value}')">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>`;
+    });
+    selectedDiv.innerHTML = html;
+    countBadge.textContent = checkboxes.length;
+  }
+  
+  updateCreateButton();
+}
+
+function removeAthlete(athleteId) {
+  const checkbox = document.getElementById(`athlete_${athleteId}`);
+  if (checkbox) {
+    checkbox.checked = false;
+    updateSelectedAthletes();
+  }
+}
+
+function updateCreateButton() {
+  const name = document.getElementById('competitionName').value.trim();
+  const exerciseId = document.getElementById('exerciseId').value;
+  const createBtn = document.getElementById('createBtn');
+  
+  createBtn.disabled = !name || !exerciseId || selectedAthletes.size === 0;
+}
+
+function updateExerciseDetails() {
+  const select = document.getElementById('exerciseId');
+  const option = select.options[select.selectedIndex];
+  const detailsDiv = document.getElementById('exerciseDetails');
+  
+  if (!select.value) {
+    detailsDiv.innerHTML = '<p class="text-muted">Select an exercise to see details</p>';
+    return;
+  }
+  
+  const series = option.dataset.series;
+  const shots = option.dataset.shots;
+  const timing = option.dataset.timing;
+  const totalShots = parseInt(series) * parseInt(shots);
+  
+  detailsDiv.innerHTML = `
+    <h6>${option.textContent.split(' - ')[0]}</h6>
+    <div class="d-flex gap-2 flex-wrap mb-2">
+      <span class="badge bg-primary">${series} series</span>
+      <span class="badge bg-info">${shots} shots/series</span>
+      <span class="badge bg-secondary">${timing}</span>
+      <span class="badge bg-success">${totalShots} total shots</span>
+    </div>
+    <p class="small text-muted mb-0">
+      Each athlete will shoot ${series} series of ${shots} shots each.
+    </p>
+  `;
+}
+
+// Event listeners
+document.getElementById('exerciseId').addEventListener('change', updateExerciseDetails);
+document.getElementById('competitionName').addEventListener('input', updateCreateButton);
+
+document.querySelectorAll('input[name="athlete_ids"]').forEach(checkbox => {
+  checkbox.addEventListener('change', updateSelectedAthletes);
+});
+
+document.getElementById('createCompetitionForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const data = {
+    name: document.getElementById('competitionName').value,
+    exercise_id: document.getElementById('exerciseId').value,
+    athlete_ids: Array.from(selectedAthletes)
+  };
+  
+  fetch('{{ url_for("competition.create_competition") }}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = `/competition/${data.competition.id}`;
+    } else {
+      alert('Error: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error creating competition:', error);
+    alert('Error creating competition');
+  });
+});
+
+// Initialize
+updateCreateButton();
+</script>
+{% endblock %}

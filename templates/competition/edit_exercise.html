@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Exercise{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1><i class="bi bi-pencil me-2"></i>Edit Exercise: {{ exercise.name }}</h1>
+      <a href="{{ url_for('competition.exercises') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Exercises
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Exercise Details</h5>
+      </div>
+      <div class="card-body">
+        <form id="editExerciseForm">
+          <input type="hidden" id="exerciseId" value="{{ exercise.id }}">
+          
+          <div class="mb-3">
+            <label for="name" class="form-label">Exercise Name *</label>
+            <input type="text" class="form-control" id="name" value="{{ exercise.name }}" required>
+          </div>
+          
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" rows="3">{{ exercise.description or '' }}</textarea>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="totalSeries" class="form-label">Total Series *</label>
+              <input type="number" class="form-control" id="totalSeries" min="1" value="{{ exercise.total_series }}" required>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="shotsPerSeries" class="form-label">Shots per Series *</label>
+              <input type="number" class="form-control" id="shotsPerSeries" min="1" value="{{ exercise.shots_per_series }}" required>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="timingType" class="form-label">Timing Type *</label>
+            <select class="form-select" id="timingType" required>
+              <option value="fixed" {{ 'selected' if exercise.timing_type == 'fixed' }}>Fixed Time</option>
+              <option value="variable" {{ 'selected' if exercise.timing_type == 'variable' }}>Variable Time</option>
+              <option value="mixed" {{ 'selected' if exercise.timing_type == 'mixed' }}>Mixed (Fixed + Variable)</option>
+            </select>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle me-1"></i> Save Changes
+            </button>
+            <a href="{{ url_for('competition.exercises') }}" class="btn btn-outline-secondary">
+              Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Exercise Information</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>ID:</strong> {{ exercise.id }}</p>
+        <p><strong>Type:</strong> <span class="badge bg-{{ 'success' if exercise.is_system else 'info' }}">
+          {{ 'System' if exercise.is_system else 'Custom' }}
+        </span></p>
+        <p><strong>Created:</strong> {{ exercise.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+        
+        <div class="alert alert-warning small">
+          <i class="bi bi-exclamation-triangle me-1"></i>
+          {% if exercise.is_system %}
+            This is a system exercise and cannot be edited.
+          {% else %}
+            Changes will affect all future competitions using this exercise.
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('editExerciseForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const exerciseId = document.getElementById('exerciseId').value;
+  const data = {
+    name: document.getElementById('name').value,
+    description: document.getElementById('description').value,
+    total_series: document.getElementById('totalSeries').value,
+    shots_per_series: document.getElementById('shotsPerSeries').value,
+    timing_type: document.getElementById('timingType').value
+  };
+  
+  fetch(`/competition/exercises/${exerciseId}/edit`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = '{{ url_for("competition.exercises") }}';
+    } else {
+      alert('Error: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error updating exercise:', error);
+    alert('Error updating exercise');
+  });
+});
+</script>
+{% endblock %}

@@ -30,6 +30,13 @@
           </a>
         </li>
 
+        <li class="nav-item">
+          <a class="nav-link{% if request.blueprint == 'competition' %} active{% endif %}"
+             href="{{ url_for('competition.index') }}">
+            <i class="bi bi-trophy me-1"></i> Competition
+          </a>
+        </li>
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle{% if request.blueprint == 'management' %} active{% endif %}"
              href="#" id="managementDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Create Exercise{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1><i class="bi bi-plus-square me-2"></i>Create Custom Exercise</h1>
+      <a href="{{ url_for('competition.exercises') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i> Back to Exercises
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h5 class="mb-0">Exercise Details</h5>
+      </div>
+      <div class="card-body">
+        <form id="createExerciseForm">
+          <div class="mb-3">
+            <label for="name" class="form-label">Exercise Name *</label>
+            <input type="text" class="form-control" id="name" required 
+                   placeholder="e.g., Custom Training Exercise">
+          </div>
+          
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" rows="3" 
+                      placeholder="Describe the exercise, rules, or special requirements"></textarea>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="totalSeries" class="form-label">Total Series *</label>
+              <input type="number" class="form-control" id="totalSeries" min="1" value="2" required>
+              <div class="form-text">Number of series in the exercise</div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+              <label for="shotsPerSeries" class="form-label">Shots per Series *</label>
+              <input type="number" class="form-control" id="shotsPerSeries" min="1" value="10" required>
+              <div class="form-text">Number of shots in each series</div>
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="timingType" class="form-label">Timing Type *</label>
+            <select class="form-select" id="timingType" required>
+              <option value="fixed">Fixed Time</option>
+              <option value="variable">Variable Time</option>
+              <option value="mixed">Mixed (Fixed + Variable)</option>
+            </select>
+            <div class="form-text">
+              <strong>Fixed:</strong> Same time for all shots<br>
+              <strong>Variable:</strong> Different times for different shots<br>
+              <strong>Mixed:</strong> Combination of fixed and variable timing
+            </div>
+          </div>
+          
+          <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-circle me-1"></i> Create Exercise
+            </button>
+            <a href="{{ url_for('competition.exercises') }}" class="btn btn-outline-secondary">
+              Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Exercise Guidelines</h6>
+      </div>
+      <div class="card-body">
+        <h6>Standard ISSF Exercises</h6>
+        <ul class="small">
+          <li><strong>ГП-11:</strong> 2 series × 20 shots (mixed timing)</li>
+          <li><strong>ГП-11a:</strong> 2 series × 20 shots (variable timing)</li>
+          <li><strong>ГП-12:</strong> 2 series × 30 shots (fixed timing)</li>
+        </ul>
+        
+        <h6>Custom Exercise Tips</h6>
+        <ul class="small">
+          <li>Keep series count reasonable (1-6)</li>
+          <li>Consider athlete skill level for shots per series</li>
+          <li>Use descriptive names for easy identification</li>
+          <li>Include special requirements in description</li>
+        </ul>
+        
+        <div class="alert alert-info small">
+          <i class="bi bi-lightbulb me-1"></i>
+          Custom exercises can be edited or deleted later, unlike system exercises.
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-calculator me-2"></i>Preview</h6>
+      </div>
+      <div class="card-body">
+        <div id="exercisePreview">
+          <p class="text-muted">Fill in the form to see exercise preview</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('createExerciseForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  const data = {
+    name: document.getElementById('name').value,
+    description: document.getElementById('description').value,
+    total_series: document.getElementById('totalSeries').value,
+    shots_per_series: document.getElementById('shotsPerSeries').value,
+    timing_type: document.getElementById('timingType').value
+  };
+  
+  fetch('{{ url_for("competition.create_exercise") }}', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = '{{ url_for("competition.exercises") }}';
+    } else {
+      alert('Error: ' + data.error);
+    }
+  })
+  .catch(error => {
+    console.error('Error creating exercise:', error);
+    alert('Error creating exercise');
+  });
+});
+
+function updatePreview() {
+  const name = document.getElementById('name').value || 'Untitled Exercise';
+  const totalSeries = document.getElementById('totalSeries').value || '0';
+  const shotsPerSeries = document.getElementById('shotsPerSeries').value || '0';
+  const timingType = document.getElementById('timingType').value;
+  const description = document.getElementById('description').value;
+  
+  const totalShots = parseInt(totalSeries) * parseInt(shotsPerSeries);
+  
+  let preview = `
+    <h6 class="mb-2">${name}</h6>
+    ${description ? `<p class="small text-muted mb-2">${description}</p>` : ''}
+    <div class="d-flex gap-2 flex-wrap">
+      <span class="badge bg-primary">${totalSeries} series</span>
+      <span class="badge bg-info">${shotsPerSeries} shots/series</span>
+      <span class="badge bg-secondary">${timingType}</span>
+      <span class="badge bg-success">${totalShots} total shots</span>
+    </div>
+  `;
+  
+  document.getElementById('exercisePreview').innerHTML = preview;
+}
+
+// Update preview on form changes
+document.getElementById('name').addEventListener('input', updatePreview);
+document.getElementById('totalSeries').addEventListener('input', updatePreview);
+document.getElementById('shotsPerSeries').addEventListener('input', updatePreview);
+document.getElementById('timingType').addEventListener('change', updatePreview);
+document.getElementById('description').addEventListener('input', updatePreview);
+
+// Initial preview
+updatePreview();
+</script>
+{% endblock %}
