@@ -97,23 +97,35 @@
 
   function updateSessionInfo(){
     if(!session){
-      $id(ids.sessionInfo).textContent = 'No session started';
-      if($id('session-info-right')) $id('session-info-right').textContent = 'No session started';
-      $id('finish-session').disabled = true;
+      const sessionInfoEl = $id(ids.sessionInfo);
+      if(sessionInfoEl) sessionInfoEl.textContent = 'No session started';
+      const sessionInfoRightEl = $id('session-info-right');
+      if(sessionInfoRightEl) sessionInfoRightEl.textContent = 'No session started';
+      const finishBtn = $id('finish-session');
+      if(finishBtn) finishBtn.disabled = true;
       // show athlete selectors
-      $id(ids.athletesList).classList.remove('d-none');
-      $id(ids.uploadBlock).classList.add('d-none');
-      $id(ids.sessionAthletesList).innerHTML = '';
+      const athletesListEl = $id(ids.athletesList);
+      if(athletesListEl) athletesListEl.classList.remove('d-none');
+      const uploadBlockEl = $id(ids.uploadBlock);
+      if(uploadBlockEl) uploadBlockEl.classList.add('d-none');
+      const sessionAthletesListEl = $id(ids.sessionAthletesList);
+      if(sessionAthletesListEl) sessionAthletesListEl.innerHTML = '';
     } else {
       const txt = `Session ${session.id} - ${session.name}`;
-      $id(ids.sessionInfo).textContent = txt;
-      if($id('session-info-right')) $id('session-info-right').textContent = txt;
-      $id('finish-session').disabled = false;
+      const sessionInfoEl = $id(ids.sessionInfo);
+      if(sessionInfoEl) sessionInfoEl.textContent = txt;
+      const sessionInfoRightEl = $id('session-info-right');
+      if(sessionInfoRightEl) sessionInfoRightEl.textContent = txt;
+      const finishBtn = $id('finish-session');
+      if(finishBtn) finishBtn.disabled = false;
       // hide athlete selectors and show which athletes were selected
-      $id(ids.athletesList).classList.add('d-none');
+      const athletesListEl = $id(ids.athletesList);
+      if(athletesListEl) athletesListEl.classList.add('d-none');
       const selectedNames = Array.from(document.querySelectorAll('.athlete-checkbox:checked')).map(cb=>cb.nextElementSibling.textContent.trim());
-      $id(ids.sessionAthletesList).textContent = selectedNames.join(', ') || '—';
-      $id(ids.uploadBlock).classList.remove('d-none');
+      const sessionAthletesListEl = $id(ids.sessionAthletesList);
+      if(sessionAthletesListEl) sessionAthletesListEl.textContent = selectedNames.join(', ') || '—';
+      const uploadBlockEl = $id(ids.uploadBlock);
+      if(uploadBlockEl) uploadBlockEl.classList.remove('d-none');
 
       // populate athlete filter dropdown
       const athleteList = document.getElementById('athlete-filter-list'); if(athleteList){ athleteList.innerHTML = '<label class="form-check"><input class="form-check-input chart-athlete-checkbox" type="checkbox" value="all" checked> All</label>'; const checks = document.querySelectorAll('.athlete-checkbox'); checks.forEach(cb=>{ const name = cb.nextElementSibling.textContent.trim(); const a = document.createElement('label'); a.className='form-check'; a.innerHTML = `<input class="form-check-input chart-athlete-checkbox" type="checkbox" value="${cb.value}"> ${name}`; athleteList.appendChild(a); });
