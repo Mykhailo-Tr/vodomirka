@@ -300,6 +300,11 @@
       totalShots += img.shots_count || 0;
       totalScore += img.total_score || 0;
       const el = document.createElement('div'); el.className='list-group-item d-flex justify-content-between align-items-center';
+      const viewBtn = `<button class="btn btn-sm btn-outline-primary me-1" data-action="view" data-id="${img.id}"><i class="bi bi-eye"></i></button>`;
+      const delBtn = `<button class="btn btn-sm btn-danger" data-action="delete" data-id="${img.id}"><i class="bi bi-trash"></i></button>`;
+      // If the session is finished, disallow deletes/uploads/edits - only view allowed
+      const actionsHtml = (session && session.finished) ? `${viewBtn}` : `${viewBtn}${delBtn}`;
+
       el.innerHTML = `
         <div class="d-flex align-items-center">
           <img src="${img.overlay_path||img.scored_path||img.original_path}" style="width:80px;height:60px;object-fit:cover;border:1px solid #ddd;margin-right:10px;"/>
@@ -311,8 +316,7 @@
         <div class="text-end">
           <span class="badge bg-primary me-1"><i class="bi bi-bullseye me-1"></i>${img.shots_count || 0}</span>
           <span class="badge bg-success me-2"><i class="bi bi-star-fill me-1"></i>${img.total_score || 0}</span>
-          <button class="btn btn-sm btn-outline-primary me-1" data-action="view" data-id="${img.id}"><i class="bi bi-eye"></i></button>
-          <button class="btn btn-sm btn-danger" data-action="delete" data-id="${img.id}"><i class="bi bi-trash"></i></button>
+          ${actionsHtml}
         </div>
       `;
       list.appendChild(el);
@@ -357,26 +361,26 @@
     const ms = $id('modal-shots'); ms.innerHTML='';
     (img.shots || []).forEach(sh => {
       const el = document.createElement('div'); el.className='list-group-item d-flex justify-content-between align-items-center align-items-center shot-row';
-      el.innerHTML = `#${sh.id} - auto <strong>${sh.auto_score}</strong> / final <strong class="shot-final" data-id="${sh.id}">${sh.final_score || ''}</strong>
-        <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-outline-primary" data-id="${sh.id}" data-action="edit">Edit</button>
-          <button class="btn btn-sm btn-outline-success" data-id="${sh.id}" data-action="inline-edit">Inline</button>
-        </div>`;
+      const canEdit = !(session && session.finished);
+      const editButtonsHtml = canEdit ? `<div class="d-flex gap-2"><button class="btn btn-sm btn-outline-primary" data-id="${sh.id}" data-action="edit">Edit</button><button class="btn btn-sm btn-outline-success" data-id="${sh.id}" data-action="inline-edit">Inline</button></div>` : '';
+      el.innerHTML = `#${sh.id} - auto <strong>${sh.auto_score}</strong> / final <strong class="shot-final" data-id="${sh.id}">${sh.final_score || ''}</strong> ${editButtonsHtml}`;
       ms.appendChild(el);
     });
 
-    ms.querySelectorAll('button[data-action="edit"]').forEach(b=>b.addEventListener('click', ()=>openShotModal(b.dataset.id)));
-    ms.querySelectorAll('button[data-action="inline-edit"]').forEach(b=>b.addEventListener('click', async (e)=>{
-      const id = e.currentTarget.dataset.id; const row = e.currentTarget.closest('.shot-row');
-      // create inline editor
-      const finalEl = row.querySelector('.shot-final'); const cur = finalEl.textContent.trim();
-      finalEl.innerHTML = `<input type="number" class="form-control form-control-sm d-inline-block me-2" style="width:80px" value="${cur||0}" data-id="${id}" id="inline-score-${id}" /> <button class="btn btn-sm btn-primary" id="inline-save-${id}">Save</button>`;
-      document.getElementById(`inline-save-${id}`).addEventListener('click', async ()=>{
-        const v = parseInt(document.getElementById(`inline-score-${id}`).value) || 0;
-        const r = await fetch(`/training/shot/${id}/edit`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({final_score: v, note: 'inline-edit'})});
-        const j = await r.json(); if(j.ok){ finalEl.textContent = j.shot.final_score; showMessage('Shot updated', 'success'); await refreshImages(); updateTrainingChart(); }
-      });
-    }));
+    if(!(session && session.finished)){
+      ms.querySelectorAll('button[data-action="edit"]').forEach(b=>b.addEventListener('click', ()=>openShotModal(b.dataset.id)));
+      ms.querySelectorAll('button[data-action="inline-edit"]').forEach(b=>b.addEventListener('click', async (e)=>{
+        const id = e.currentTarget.dataset.id; const row = e.currentTarget.closest('.shot-row');
+        // create inline editor
+        const finalEl = row.querySelector('.shot-final'); const cur = finalEl.textContent.trim();
+        finalEl.innerHTML = `<input type="number" class="form-control form-control-sm d-inline-block me-2" style="width:80px" value="${cur||0}" data-id="${id}" id="inline-score-${id}" /> <button class="btn btn-sm btn-primary" id="inline-save-${id}">Save</button>`;
+        document.getElementById(`inline-save-${id}`).addEventListener('click', async ()=>{
+          const v = parseInt(document.getElementById(`inline-score-${id}`).value) || 0;
+          const r = await fetch(`/training/shot/${id}/edit`, {method:'POST', headers:{'content-type':'application/json'}, body: JSON.stringify({final_score: v, note: 'inline-edit'})});
+          const j = await r.json(); if(j.ok){ finalEl.textContent = j.shot.final_score; showMessage('Shot updated', 'success'); await refreshImages(); updateTrainingChart(); }
+        });
+      }));
+    }
 
     // thumbnails (show Overlay, Scored, Original, Ideal with labels and active highlighting)
     const thumbs = $id('modal-thumbs'); if(thumbs){
@@ -536,6 +540,19 @@
     }
 
     // initial refresh if session exists
-    if(session) refreshImages();
+    // Hydrate preloaded session if provided by server (resume/view)
+    if(window.PRELOADED_TRAINING_SESSION){
+      try{ session = window.PRELOADED_TRAINING_SESSION; }catch(e){ session = null; }
+      updateSessionInfo();
+      if(session) refreshImages();
+      // If session is finished, make UI read-only: hide upload block and disable edits
+      if(session && session.finished){
+        const uploadBlockEl = $id(ids.uploadBlock); if(uploadBlockEl) uploadBlockEl.classList.add('d-none');
+        const startBtn = $id('start-session'); if(startBtn) startBtn.disabled = true;
+        const finishBtn = $id('finish-session'); if(finishBtn) finishBtn.disabled = true;
+      }
+    } else {
+      if(session) refreshImages();
+    }
   });
 })();

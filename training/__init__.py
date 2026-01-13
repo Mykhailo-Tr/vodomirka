@@ -204,6 +204,87 @@ def finish_session(session_id):
     return jsonify({"ok": True, "finished_at": str(s.finished_at)})
 
 
+@training_bp.route('/sessions')
+def sessions_list():
+    """Render sessions management page (client-side will fetch via API)."""
+    athletes = Athlete.query.order_by(Athlete.first_name, Athlete.last_name).all()
+    return render_template('training/sessions/list.html', athletes=athletes)
+
+
+@training_bp.route('/api/sessions')
+def api_sessions():
+    """Return JSON list of sessions with basic pagination, filtering and sorting."""
+    try:
+        page = int(request.args.get('page', 1))
+        per_page = int(request.args.get('per_page', 20))
+    except Exception:
+        page = 1
+        per_page = 20
+
+    status = request.args.get('status')  # 'active'|'finished'|None
+    athlete_id = request.args.get('athlete_id', type=int)
+    sort = request.args.get('sort', 'started_at')
+
+    q = Session.query.filter(Session.mode == 'training')
+    if status == 'active':
+        q = q.filter(Session.finished_at.is_(None))
+    elif status == 'finished':
+        q = q.filter(Session.finished_at.isnot(None))
+
+    if athlete_id:
+        q = q.join(Session.athletes).filter(Athlete.id == athlete_id)
+
+    # simple sorting
+    if sort == 'started_at':
+        q = q.order_by(Session.started_at.desc())
+    else:
+        q = q.order_by(Session.id.desc())
+
+    total = q.count()
+    items = q.offset((page - 1) * per_page).limit(per_page).all()
+
+    def s_to_dict(s: Session):
+        total_shots = sum(img.shots_count() for img in s.images)
+        total_score = sum(img.total_score() for img in s.images)
+        return {
+            'id': s.id,
+            'name': s.name,
+            'started_at': str(s.started_at),
+            'finished_at': str(s.finished_at) if s.finished_at else None,
+            'status': 'finished' if s.finished_at else 'active',
+            'athletes': [{'id': a.id, 'name': f"{a.first_name} {a.last_name or ''}".strip()} for a in s.athletes],
+            'total_shots': total_shots,
+            'total_score': total_score,
+        }
+
+    return jsonify({'total': total, 'page': page, 'per_page': per_page, 'items': [s_to_dict(x) for x in items]})
+
+
+@training_bp.route('/session/<int:session_id>')
+def session_view(session_id: int):
+    """Render the same training UI but preloaded for a given session id.
+
+    The template will receive PRELOADED_TRAINING_SESSION via inline script for frontend hydration.
+    """
+    s = Session.query.get_or_404(session_id)
+    athletes = Athlete.query.order_by(Athlete.first_name, Athlete.last_name).all()
+    session_info = {
+        'id': s.id,
+        'name': s.name,
+        'finished': bool(s.finished_at),
+        'athletes': [a.id for a in s.athletes],
+    }
+    return render_template('training/index.html', athletes=athletes, session_info=session_info)
+
+
+@training_bp.route('/session/<int:session_id>/delete', methods=['POST'])
+def session_delete(session_id: int):
+    s = Session.query.get_or_404(session_id)
+    db.session.delete(s)
+    db.session.commit()
+    return jsonify({'ok': True})
+
+
 @training_bp.route("/shot/<int:shot_id>", methods=["GET"])
 def get_shot(shot_id):
     shot = Shot.query.get_or_404(shot_id)

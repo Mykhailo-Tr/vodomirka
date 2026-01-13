@@ -18,9 +18,15 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link{% if request.blueprint == 'training' %} active{% endif %}"
+          <a class="nav-link{% if request.blueprint == 'training' and request.endpoint == 'training.index' %} active{% endif %}"
              href="{{ url_for('training.index') }}">
             <i class="bi bi-journal-bookmark me-1"></i> Training
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link{% if request.blueprint == 'training' and request.endpoint == 'training.sessions_list' %} active{% endif %}"
+             href="{{ url_for('training.sessions_list') }}">
+            <i class="bi bi-list-ul me-1"></i> Sessions
           </a>
         </li>
 

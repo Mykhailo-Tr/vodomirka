@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Training Sessions - ISSF Target Scorer{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row mb-3">
+    <div class="col-12">
+      <h3>Training Sessions</h3>
+      <p class="text-muted">List, resume, finish and delete training sessions.</p>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <h6>Filters</h6>
+          <div class="mb-2">
+            <label class="form-label">Status</label>
+            <select id="filter-status" class="form-select">
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="finished">Finished</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Athlete</label>
+            <select id="filter-athlete" class="form-select">
+              <option value="">All</option>
+              {% for a in athletes %}
+                <option value="{{ a.id }}">{{ a.first_name }} {{ a.last_name or '' }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="d-grid">
+            <button id="apply-filters" class="btn btn-primary btn-sm">Apply</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">Sessions</h6>
+            <div>
+              <button id="refresh-sessions" class="btn btn-sm btn-outline-secondary me-1">Refresh</button>
+              <a class="btn btn-sm btn-outline-primary" href="{{ url_for('training.index') }}">New session</a>
+            </div>
+          </div>
+
+          <div id="sessions-list" class="table-responsive">
+            <!-- sessions table injected by JS -->
+          </div>
+
+          <nav id="sessions-pager" class="mt-2" aria-label="Page navigation">
+            <!-- pager injected by JS -->
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Finish confirmation modal -->
+<div class="modal fade" id="confirmFinishModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Finish session</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">Are you sure you want to finish this session? This will prevent further uploads.</div>
+      <div class="modal-footer">
+        <button id="confirm-finish-btn" class="btn btn-danger">Finish</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Delete session</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">This will permanently delete the session and all its images and shots. Are you sure?</div>
+      <div class="modal-footer">
+        <button id="confirm-delete-session-btn" class="btn btn-danger">Delete</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/training-sessions.js') }}"></script>
+{% endblock %}
