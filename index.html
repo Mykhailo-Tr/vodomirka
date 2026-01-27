@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target Scorer — система аналізу мішеней</title>
+
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #111827;
+            --accent: #38bdf8;
+            --text: #e5e7eb;
+            --muted: #9ca3af;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Roboto, Arial, sans-serif;
+            background: linear-gradient(120deg, #020617, #0f172a);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            padding: 64px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        header p {
+            max-width: 800px;
+            margin: auto;
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        section {
+            max-width: 1100px;
+            margin: auto;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #7dd3fc;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(56,189,248,0.15);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            margin: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Target Scorer</h1>
+    <p>
+        Інтелектуальна система автоматизованого аналізу паперових та картонних мішеней
+        для спортивної стрільби на основі комп’ютерного зору та штучного інтелекту
+        (ISSF 10 м, пневматична зброя).
+    </p>
+
+    <div style="margin-top:20px;">
+        <span class="badge">YOLOv11</span>
+        <span class="badge">Computer Vision</span>
+        <span class="badge">ISSF Best Edge</span>
+        <span class="badge">Python + Flask</span>
+        <span class="badge">Roboflow</span>
+    </div>
+</header>
+
+<section>
+    <h2>Призначення системи</h2>
+    <p>
+        Target Scorer призначена для автоматичного визначення кількості пострілів,
+        їх координат та результатів відповідно до правил ISSF з використанням звичайних
+        камер та недорогого обладнання. Система орієнтована на навчально-тренувальний процес
+        у стрілецьких секціях, школах та клубах.
+    </p>
+</section>
+
+<section>
+    <h2>Ключові можливості</h2>
+    <div class="grid">
+        <div class="card">
+            <h3>Комп’ютерний зір</h3>
+            <p>
+                Детекція отворів від куль, центру мішені та залікових кілець
+                за допомогою моделі YOLOv11 Object Detection.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Точний підрахунок</h3>
+            <p>
+                Результат пострілу визначається за принципом ISSF <i>best edge</i>
+                з переведенням координат з пікселів у міліметри.
+            </p>
+        </div>
+
+        <div class="card">
+            <h3>Вебінтерфейс</h3>
+            <p>
+                Візуалізація результатів стрільби, накладання мішені,
+                збереження та аналіз статистики у зручному форматі.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Технологічний стек</h2>
+    <ul>
+        <li>Python — серверна логіка та обчислення</li>
+        <li>OpenCV, NumPy — обробка зображень та геометричні розрахунки</li>
+        <li>Roboflow + YOLOv11 — навчання та інференс моделі ШІ</li>
+        <li>Flask — вебсервер та API</li>
+        <li>HTML / CSS / JavaScript — клієнтський інтерфейс</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Результати тестування</h2>
+    <p>
+        Система протестована на 100 мішенях (176 пострілів).
+        Коректне визначення кількості пострілів — 97%.
+        Відхилення результату не перевищувало ±1 балу.
+    </p>
+</section>
+
+<section>
+    <h2>Перспективи розвитку</h2>
+    <ul>
+        <li>Підтримка рухомих мішеней та інших дисциплін ISSF</li>
+        <li>Підвищення точності при щільних групах пострілів</li>
+        <li>Розширена аналітика та профілі спортсменів</li>
+    </ul>
+</section>
+
+<footer>
+    Target Scorer © 2026  
+    <br>
+    Науково-дослідницький проєкт МАН України
+</footer>
+
+</body>
+</html>
