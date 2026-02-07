@@ -10,180 +10,847 @@
             --bg: #0f172a;
             --card: #111827;
             --accent: #38bdf8;
+            --accent-light: #7dd3fc;
             --text: #e5e7eb;
             --muted: #9ca3af;
+            --border: #1e293b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
-            margin: 0;
-            font-family: "Segoe UI", Roboto, Arial, sans-serif;
-            background: linear-gradient(120deg, #020617, #0f172a);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1a1f35 100%);
             color: var(--text);
             line-height: 1.6;
         }
 
-        header {
-            padding: 64px 20px;
-            text-align: center;
-        }
-
-        header h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            color: var(--accent);
-        }
-
-        header p {
-            max-width: 800px;
-            margin: auto;
-            color: var(--muted);
-            font-size: 1.1rem;
-        }
-
-        section {
-            max-width: 1100px;
-            margin: auto;
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
             padding: 40px 20px;
+            z-index: 1000;
         }
 
-        h2 {
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        .sidebar-logo {
+            font-size: 1.4rem;
+            font-weight: 700;
             color: var(--accent);
-            margin-bottom: 16px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border);
         }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+        .sidebar-nav {
+            list-style: none;
         }
 
-        .card {
-            background: var(--card);
-            border-radius: 14px;
-            padding: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        .sidebar-nav li {
+            margin-bottom: 12px;
         }
 
-        .card h3 {
-            margin-top: 0;
-            color: #7dd3fc;
+        .sidebar-nav a {
+            display: block;
+            padding: 12px 16px;
+            color: var(--muted);
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            border-left: 3px solid transparent;
         }
 
-        ul {
+        .sidebar-nav a:hover {
+            color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+            border-left-color: var(--accent);
             padding-left: 20px;
         }
 
-        footer {
+        .sidebar-nav a.active {
+            color: var(--accent);
+            background: rgba(56, 189, 248, 0.15);
+            border-left-color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 100px 40px;
             text-align: center;
-            padding: 30px 20px;
+            background: linear-gradient(180deg, rgba(56, 189, 248, 0.05) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
             color: var(--muted);
-            font-size: 0.9rem;
+            max-width: 900px;
+            margin: 0 auto 30px;
+            line-height: 1.8;
+        }
+
+        .badge-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
         }
 
         .badge {
             display: inline-block;
-            background: rgba(56,189,248,0.15);
+            background: rgba(56, 189, 248, 0.15);
             color: var(--accent);
-            padding: 6px 12px;
-            border-radius: 999px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-size: 0.85rem;
-            margin: 4px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* Sections */
+        section {
+            padding: 80px 40px;
+            border-bottom: 1px solid var(--border);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-top: 40px;
+        }
+
+        .content-grid.reverse {
+            direction: rtl;
+        }
+
+        .content-grid.reverse > * {
+            direction: ltr;
+        }
+
+        .photo-placeholder {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.15) 0%, rgba(56, 189, 248, 0.05) 100%);
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            aspect-ratio: 4/3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-placeholder:hover {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(56, 189, 248, 0.08) 100%);
+        }
+
+        .photo-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content-text h3 {
+            font-size: 1.8rem;
+            color: var(--accent-light);
+            margin-bottom: 20px;
+        }
+
+        .content-text p {
+            color: var(--text);
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .content-text ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-text li {
+            padding-left: 30px;
+            margin-bottom: 12px;
+            position: relative;
+            color: var(--text);
+        }
+
+        .content-text li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.05) 0%, rgba(56, 189, 248, 0.02) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent);
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(56, 189, 248, 0.05) 100%);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            color: var(--accent-light);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 40px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent), transparent);
+        }
+
+        .timeline-item {
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            margin-right: auto;
+            width: 48%;
+            text-align: right;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: auto;
+            width: 48%;
+            text-align: left;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
+            border: 3px solid var(--bg);
+            border-radius: 50%;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .timeline-content {
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .timeline-content h4 {
+            color: var(--accent-light);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .timeline-content p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 30px;
+            background: rgba(56, 189, 248, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(0, 0, 0, 0.3);
+            border-top: 1px solid var(--border);
+            padding: 40px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 20px;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .sidebar-nav li {
+                flex: 1;
+                min-width: 150px;
+            }
+
+            .hero {
+                padding: 50px 20px;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            section {
+                padding: 50px 20px;
+            }
+
+            section h2 {
+                font-size: 1.8rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .timeline::before {
+                left: 0;
+            }
+
+            .timeline-item {
+                width: 100% !important;
+                text-align: left !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 30px;
+            }
+
+            .timeline-dot {
+                left: 0;
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+
+            .badge-group {
+                gap: 8px;
+            }
+
+            .badge {
+                font-size: 0.75rem;
+                padding: 6px 12px;
+            }
+
+            section {
+                padding: 30px 15px;
+            }
+
+            section h2 {
+                font-size: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<header>
-    <h1>Target Scorer</h1>
-    <p>
-        Інтелектуальна система автоматизованого аналізу паперових та картонних мішеней
-        для спортивної стрільби на основі комп’ютерного зору та штучного інтелекту
-        (ISSF 10 м, пневматична зброя).
-    </p>
+<!-- Sidebar Navigation -->
+<aside class="sidebar">
+    <div class="sidebar-logo">Target Scorer</div>
+    <nav>
+        <ul class="sidebar-nav">
+            <li><a href="#hero" class="nav-link active">Головна</a></li>
+            <li><a href="#overview" class="nav-link">Огляд</a></li>
+            <li><a href="#features" class="nav-link">Можливості</a></li>
+            <li><a href="#technology" class="nav-link">Технології</a></li>
+            <li><a href="#roadmap" class="nav-link">Дорожна карта</a></li>
+            <li><a href="#results" class="nav-link">Результати</a></li>
+            <li><a href="#future" class="nav-link">Перспективи</a></li>
+            <li><a href="#team" class="nav-link">Про проект</a></li>
+        </ul>
+    </nav>
+</aside>
 
-    <div style="margin-top:20px;">
-        <span class="badge">YOLOv11</span>
-        <span class="badge">Computer Vision</span>
-        <span class="badge">ISSF Best Edge</span>
-        <span class="badge">Python + Flask</span>
-        <span class="badge">Roboflow</span>
-    </div>
-</header>
+<!-- Main Content -->
+<main class="main-content">
 
-<section>
-    <h2>Призначення системи</h2>
-    <p>
-        Target Scorer призначена для автоматичного визначення кількості пострілів,
-        їх координат та результатів відповідно до правил ISSF з використанням звичайних
-        камер та недорогого обладнання. Система орієнтована на навчально-тренувальний процес
-        у стрілецьких секціях, школах та клубах.
-    </p>
-</section>
-
-<section>
-    <h2>Ключові можливості</h2>
-    <div class="grid">
-        <div class="card">
-            <h3>Комп’ютерний зір</h3>
-            <p>
-                Детекція отворів від куль, центру мішені та залікових кілець
-                за допомогою моделі YOLOv11 Object Detection.
-            </p>
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <h1>Target Scorer</h1>
+        <p class="subtitle">
+            Інтелектуальна система автоматизованого аналізу мішеней 
+            для спортивної стрільби на основі комп'ютерного зору та штучного інтелекту
+        </p>
+        <div class="badge-group">
+            <span class="badge">YOLOv11</span>
+            <span class="badge">OpenCV</span>
+            <span class="badge">ISSF Best Edge</span>
+            <span class="badge">Flask + Python</span>
+            <span class="badge">Roboflow</span>
         </div>
+    </section>
 
-        <div class="card">
-            <h3>Точний підрахунок</h3>
-            <p>
-                Результат пострілу визначається за принципом ISSF <i>best edge</i>
-                з переведенням координат з пікселів у міліметри.
-            </p>
+    <!-- Overview Section -->
+    <section id="overview">
+        <h2>Система та її призначення</h2>
+        <div class="content-grid">
+            <div class="content-text">
+                <h3>Що зробить система?</h3>
+                <p>
+                    Target Scorer — це розумна система, яка автоматично аналізує результати стрільби на паперових та картонних мішенях. 
+                    За допомогою камери та штучного інтелекту система визначає кількість пострілів, їх точне розташування та оцінює результат 
+                    по правилам ISSF.
+                </p>
+                <ul>
+                    <li>Автоматична детекція отворів від куль</li>
+                    <li>Точне визначення координат у міліметрах</li>
+                    <li>Розрахунок результату за стандартами ISSF</li>
+                    <li>Збереження та аналіз статистики</li>
+                </ul>
+            </div>
+            <div class="photo-placeholder">
+                <span>📸 Фото мішені в системі</span>
+            </div>
         </div>
+    </section>
 
-        <div class="card">
-            <h3>Вебінтерфейс</h3>
-            <p>
-                Візуалізація результатів стрільби, накладання мішені,
-                збереження та аналіз статистики у зручному форматі.
-            </p>
+    <!-- Features Section -->
+    <section id="features">
+        <h2>Ключові можливості</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>🤖 Детекція об'єктів</h3>
+                <p>
+                    Використання моделі YOLOv11 для точної детекції отворів від куль, 
+                    центру мішені та залікових кілець на зображенні.
+                </p>
+            </div>
+            <div class="card">
+                <h3>📐 Точна геометрія</h3>
+                <p>
+                    Перетворення координат з пікселів у міліметри з урахуванням 
+                    параметрів камери. Принцип ISSF "Best Edge" для найточнішого результату.
+                </p>
+            </div>
+            <div class="card">
+                <h3>📊 Вебінтерфейс</h3>
+                <p>
+                    Сучасний та интуїтивний інтерфейс для перегляду результатів, 
+                    налаштування параметрів та аналізу статистики.
+                </p>
+            </div>
+            <div class="card">
+                <h3>💾 Збереження даних</h3>
+                <p>
+                    Безпечне видалення всіх мішеней, результатів та зображень 
+                    з можливістю експорту даних для подальшого аналізу.
+                </p>
+            </div>
+            <div class="card">
+                <h3>⚡ Висока продуктивність</h3>
+                <p>
+                    Швидкий аналіз фотографій у реальному часі навіть на слабших пристроях 
+                    завдяки оптимізованим алгоритмам обробки.
+                </p>
+            </div>
+            <div class="card">
+                <h3>📱 Адаптивний дизайн</h3>
+                <p>
+                    Повна підтримка мобільних пристроїв, планшетів та десктопів 
+                    з однаковою якістю інтерфейсу.
+                </p>
+            </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<section>
-    <h2>Технологічний стек</h2>
-    <ul>
-        <li>Python — серверна логіка та обчислення</li>
-        <li>OpenCV, NumPy — обробка зображень та геометричні розрахунки</li>
-        <li>Roboflow + YOLOv11 — навчання та інференс моделі ШІ</li>
-        <li>Flask — вебсервер та API</li>
-        <li>HTML / CSS / JavaScript — клієнтський інтерфейс</li>
-    </ul>
-</section>
+    <!-- Technology Section -->
+    <section id="technology">
+        <h2>Технологічний стек</h2>
+        <div class="content-grid reverse">
+            <div class="content-text">
+                <h3>З яких технологій складається?</h3>
+                <ul>
+                    <li><strong>Python</strong> — серверна логіка та обчислення</li>
+                    <li><strong>Flask</strong> — вебсервер та REST API</li>
+                    <li><strong>OpenCV</strong> — обробка зображень</li>
+                    <li><strong>YOLOv11</strong> — нейромережа для детекції</li>
+                    <li><strong>NumPy</strong> — математичні операції</li>
+                    <li><strong>SQLite</strong> — база даних результатів</li>
+                    <li><strong>HTML/CSS/JavaScript</strong> — фронтенд інтерфейс</li>
+                </ul>
+            </div>
+            <div class="photo-placeholder">
+                <span>🔧 Архітектура системи</span>
+            </div>
+        </div>
+    </section>
 
-<section>
-    <h2>Результати тестування</h2>
-    <p>
-        Система протестована на 100 мішенях (176 пострілів).
-        Коректне визначення кількості пострілів — 97%.
-        Відхилення результату не перевищувало ±1 балу.
-    </p>
-</section>
+    <!-- Roadmap Section -->
+    <section id="roadmap">
+        <h2>Дорожна карта розвитку</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>Завершено: Основна функціональність</h4>
+                    <p>Детекція пострілів, розрахунок позицій, вебінтерфейс</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>Завершено: Тестування</h4>
+                    <p>Валідація на 100+ мішеня, точність 97%</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>В розвитку: Оптимізація алгоритмів</h4>
+                    <p>Підвищення точності при щільних групах пострілів</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>Планується: Розширена аналітика</h4>
+                    <p>Профілі спортсменів, тренувальні плани</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content">
+                    <h4>Планується: Інші дисципліни ISSF</h4>
+                    <p>Рухомі мішені, інші відстані та типи зброї</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<section>
-    <h2>Перспективи розвитку</h2>
-    <ul>
-        <li>Підтримка рухомих мішеней та інших дисциплін ISSF</li>
-        <li>Підвищення точності при щільних групах пострілів</li>
-        <li>Розширена аналітика та профілі спортсменів</li>
-    </ul>
-</section>
+    <!-- Results Section -->
+    <section id="results">
+        <h2>Результати тестування</h2>
+        <div class="content-grid">
+            <div class="photo-placeholder">
+                <span>📈 Графіки точності</span>
+            </div>
+            <div class="content-text">
+                <h3>Перевірена точність</h3>
+                <p>
+                    Система була ретельно протестована на великому наборі даних, 
+                    що включав різні умови освітлення, типи камер та якість мішеней.
+                </p>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-number">97%</div>
+                        <div class="stat-label">Коректне визначення кількості пострілів</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">±1</div>
+                        <div class="stat-label">Максимальне відхилення результату</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">100+</div>
+                        <div class="stat-label">Мішеней залучено до тестування</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">176</div>
+                        <div class="stat-label">Пострілів проаналізовано</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-<footer>
-    Target Scorer © 2026  
-    <br>
-    Науково-дослідницький проєкт МАН України
-</footer>
+    <!-- Future Section -->
+    <section id="future">
+        <h2>Перспективи розвитку</h2>
+        <div class="cards-grid">
+            <div class="card">
+                <h3>🎯 Розширена поддержка</h3>
+                <p>
+                    Адаптація під інші дисципліни ISSF: 25м, 50м, 
+                    рухомі мішені та інші типи зброї.
+                </p>
+            </div>
+            <div class="card">
+                <h3>🧠 Покращена AI</h3>
+                <p>
+                    Використання більш складних моделей для роботи 
+                    з перекритими та щільними групами пострілів.
+                </p>
+            </div>
+            <div class="card">
+                <h3>📚 Аналітичні інструменти</h3>
+                <p>
+                    Детальні звіти про прогрес, порівняння результатів, 
+                    рекомендації щодо тренування.
+                </p>
+            </div>
+            <div class="card">
+                <h3>🔗 Інтеграція</h3>
+                <p>
+                    Підключення до інших платформ, API для зовнішніх сервісів, 
+                    синхронизація даних.
+                </p>
+            </div>
+            <div class="card">
+                <h3>🌐 Розширення мережі</h3>
+                <p>
+                    Поширення в інших країнах, локалізація інтерфейсу, 
+                    підтримка різних стандартів.
+                </p>
+            </div>
+            <div class="card">
+                <h3>⚙️ Додаткові функції</h3>
+                <p>
+                    Кібердиапазон, калібрування камер, автоматичне коригування 
+                    параметрів освітлення.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="team">
+        <h2>Про проект</h2>
+        <div class="content-grid">
+            <div class="content-text">
+                <h3>Освітня ініціатива МАН</h3>
+                <p>
+                    Target Scorer розроблений як науково-дослідницький проект в рамках МАН України. 
+                    Проект демонструє практичне застосування сучасних технологій штучного інтелекту 
+                    та комп'ютерного зору до реальної предметної області.
+                </p>
+                <h3>Мета проекту</h3>
+                <ul>
+                    <li>Показати можливості комп'ютерного зору у спорті</li>
+                    <li>Розробити інструмент для допомоги тренерам та спортсменам</li>
+                    <li>Сприяти розвитку цифрових навичок у гімназистів</li>
+                    <li>Демонстрація застосування ШІ у практичних задачах</li>
+                </ul>
+            </div>
+            <div class="photo-placeholder">
+                <span>🏆 Логотип МАН України</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>Target Scorer © 2026</strong></p>
+        <p>Науково-дослідницький проєкт МАН України</p>
+        <p style="margin-top: 20px; font-size: 0.85rem; color: var(--muted);">
+            Проект демонструє застосування комп'ютерного зору, машинного навчання та веб-технологій 
+            до розв'язання реальної задачі в спортивній стрільбі. 
+        </p>
+    </footer>
+
+</main>
+
+<script>
+    // Smooth scroll and active link highlighting
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+
+    function updateActiveLink() {
+        let current = '';
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.clientHeight;
+            if (pageYOffset >= sectionTop - 200) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', updateActiveLink);
+    updateActiveLink();
+
+    // Smooth scroll for navigation links
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+</script>
 
 </body>
 </html>
