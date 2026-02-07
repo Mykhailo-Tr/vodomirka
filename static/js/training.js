@@ -153,65 +153,71 @@
     const el = document.getElementById(ids.trainingChart);
     if(!el) return;
 
+    const toTs = (img, idx) => {
+      if(img && img.created_at){
+        const t = new Date(img.created_at);
+        if(!isNaN(t.getTime())) return t.getTime();
+      }
+      return Date.now() + idx * 1000;
+    };
+
+    const shotsForPoint = (shots=[]) => {
+      if(!shots.length) return '<em>No shots detected</em>';
+      return shots.map(s=>`#${s.id}: auto ${s.auto_score ?? s.score ?? 0} final ${s.final_score ?? ''}`).join('<br/>');
+    };
+
     // If user selected athlete filter(s), do grouping (ignore if 'all' checked)
     const athleteFilter = Array.from(document.querySelectorAll('.chart-athlete-checkbox:checked')).map(cb=>cb.value);
+    let series = [];
     if(athleteFilter && athleteFilter.length && !athleteFilter.includes('all')){
-      // group images per athlete_id; create series per athlete
       const grouped = {};
-      imgs.forEach(img=>{
+      imgs.forEach((img, idx)=>{
         const aid = img.athlete_id || 'unassigned';
-        if(!grouped[aid]) grouped[aid] = { name: img.athlete_name || (aid==='unassigned'?'Unassigned':'Athlete '+aid), imgs: [] };
-        grouped[aid].imgs.push(img);
+        if(!grouped[aid]) grouped[aid] = { name: img.athlete_name || (aid==='unassigned'?'Unassigned':'Athlete '+aid), data: [] };
+        grouped[aid].data.push({
+          x: toTs(img, idx),
+          y: img.total_score || 0,
+          name: img.filename || (`#${img.id}`),
+          shots: img.shots || []
+        });
       });
-      const series = Object.keys(grouped).filter(k=> athleteFilter.includes(String(k))).map(k=>({ name: grouped[k].name, data: grouped[k].imgs.map(i=>i.total_score||0), categories: grouped[k].imgs.map(i=>i.filename) }));
-      // if no series after filter, show empty
-      if(!series.length){ if(trainingChart) trainingChart.updateSeries([], true); return; }
-      // if trainingChart not created, create multi-series chart
-      if(!trainingChart){
-        const opts = {
-          chart: { type: 'area', height: 140, toolbar: { show: false } },
-          series: series.map(s=>({ name: s.name, data: s.data })),
-          xaxis: { categories: series[0] ? series[0].categories : [], labels: { rotate: -45 } },
-          stroke: { curve: 'smooth' },
-          colors: ['#0d6efd','#20c997','#fd7e14','#6f42c1','#dc3545'],
-          tooltip: { enabled: true, custom: function({series, seriesIndex, dataPointIndex, w}){ const label = w.globals.labels[dataPointIndex]; return `<div class='small p-2'>${label}<br/>Score: ${series[seriesIndex][dataPointIndex]}</div>` } },
-          dataLabels: { enabled: false }
-        };
-        trainingChart = new ApexCharts(el, opts);
-        trainingChart.render();
-      } else {
-        trainingChart.updateOptions({ xaxis: { categories: series[0] ? series[0].categories : [] } }, false, false);
-        trainingChart.updateSeries(series.map(s=>({ name: s.name, data: s.data })), true);
-      }
-      return;
-    }
-    const labels = imgs.map(i=> i.filename || (`#${i.id}`));
-    const data = imgs.map(i=> i.total_score || 0);
-    // map image filename -> shots for tooltip
-    const shotsMap = {};
-    imgs.forEach(i=>{ shotsMap[i.filename || (`#${i.id}`)] = i.shots || []; });
-    if(!trainingChart){
-      const opts = {
-        chart: { type: 'area', height: 140, toolbar: { show: false } },
-        series: [{ name: 'Total score', data }],
-        xaxis: { categories: labels, labels: { rotate: -45 } },
-        stroke: { curve: 'smooth' },
-        colors: ['#0d6efd'],
-        tooltip: { enabled: true, custom: function({series, seriesIndex, dataPointIndex, w}){
-          const label = w.globals.labels[dataPointIndex];
-          const shots = shotsMap[label] || [];
-          if(!shots.length) return `<div class='small p-2'>${label}<br><em>No shots detected</em></div>`;
-          const rows = shots.map(s=> `<div class='small'>#${s.id}: auto ${s.score || s.auto_score} final ${s.final_score || ''}</div>`).join('');
-          return `<div class='p-2 small'><strong>${label}</strong><br/>Score: ${series[seriesIndex][dataPointIndex] || 0}<hr class="my-1"/>${rows}</div>`;
-        }},
-        dataLabels: { enabled: false }
-      };
-      trainingChart = new ApexCharts(el, opts);
-      trainingChart.render();
+      series = Object.keys(grouped)
+        .filter(k=> athleteFilter.includes(String(k)))
+        .map(k=>({ name: grouped[k].name, data: grouped[k].data.sort((a,b)=>a.x-b.x) }));
     } else {
-      trainingChart.updateOptions({ xaxis: { categories: labels } }, false, false);
-      trainingChart.updateSeries([{ data }], true);
+      series = [{
+        name: 'Total score',
+        data: imgs.map((img, idx)=>({
+          x: toTs(img, idx),
+          y: img.total_score || 0,
+          name: img.filename || (`#${img.id}`),
+          shots: img.shots || []
+        })).sort((a,b)=>a.x-b.x)
+      }];
     }
+
+    if(trainingChart){ trainingChart.destroy(); trainingChart = null; }
+
+    trainingChart = Highcharts.chart(el, {
+      chart: { type: 'area', height: 140, zoomType: 'x' },
+      title: { text: null },
+      xAxis: { type: 'datetime' },
+      yAxis: { title: { text: 'Score' } },
+      legend: { enabled: series.length > 1 },
+      tooltip: {
+        useHTML: true,
+        formatter: function(){
+          const p = this.point;
+          const label = p.name || '';
+          return `<div class='small p-2'><strong>${label}</strong><br/>Score: ${p.y || 0}<hr class="my-1"/>${shotsForPoint(p.shots)}</div>`;
+        }
+      },
+      plotOptions: {
+        area: { fillOpacity: 0.2, marker: { radius: 3 } }
+      },
+      series,
+      credits: { enabled: false }
+    });
   }
 
   async function uploadFile(){

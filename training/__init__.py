@@ -51,7 +51,7 @@ def session_images(session_id):
         d = img.to_dict()
         # include minimal shots info
         d["shots"] = [{"id": sh.id, "auto_score": sh.auto_score, "final_score": sh.final_score} for sh in img.shots]
-        d["created_at"] = str(img.created_at)
+        d["created_at"] = img.created_at.isoformat() if img.created_at else None
         images.append(d)
     # sort by created_at ascending
     images.sort(key=lambda x: x.get("created_at") or "")

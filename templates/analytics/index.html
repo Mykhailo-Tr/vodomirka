@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - ISSF Target Scorer{% endblock %}
+
+{% block content %}
+<div class="container-fluid analytics-dashboard">
+  <div class="row align-items-center mb-3">
+    <div class="col-12 col-lg-6">
+      <h3 class="mb-1">Performance Analytics</h3>
+      <p class="text-muted mb-0">Advanced athlete, team, and competition insights powered by Highcharts.</p>
+    </div>
+    <div class="col-12 col-lg-6 text-lg-end mt-2 mt-lg-0">
+      <button id="resetFilters" class="btn btn-outline-secondary btn-sm">Reset Filters</button>
+      <button id="applyFilters" class="btn btn-primary btn-sm ms-2">Apply Filters</button>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-xl-3">
+      <div class="card h-100 shadow-sm">
+        <div class="card-body">
+          <h6 class="card-title">Filters</h6>
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label small text-muted">Date range</label>
+              <div class="d-flex gap-2">
+                <input type="date" class="form-control form-control-sm" id="filterStart">
+                <input type="date" class="form-control form-control-sm" id="filterEnd">
+              </div>
+            </div>
+            <div class="col-12">
+              <label class="form-label small text-muted">Session type</label>
+              <div id="filterModes" class="d-flex flex-wrap gap-2 small"></div>
+            </div>
+            <div class="col-12">
+              <label class="form-label small text-muted">Athletes</label>
+              <select id="filterAthletes" class="form-select form-select-sm" multiple size="6"></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label small text-muted">Teams</label>
+              <select id="filterTeams" class="form-select form-select-sm" multiple size="4"></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label small text-muted">Rifles</label>
+              <select id="filterRifles" class="form-select form-select-sm" multiple size="4"></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label small text-muted">Jackets</label>
+              <select id="filterJackets" class="form-select form-select-sm" multiple size="4"></select>
+            </div>
+            <div class="col-12">
+              <label class="form-label small text-muted">Sight / Optic</label>
+              <select id="filterScopes" class="form-select form-select-sm" multiple size="4"></select>
+            </div>
+            <div class="col-12 form-check mt-2">
+              <input class="form-check-input" type="checkbox" id="filterIncludeUnassigned">
+              <label class="form-check-label small" for="filterIncludeUnassigned">Include unassigned athletes</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-xl-9">
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="card metric-card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="text-muted small">Average Score</div>
+                  <div class="metric-value" id="metricAvgScore">0</div>
+                </div>
+                <div class="metric-icon bg-primary-subtle text-primary"><i class="bi bi-speedometer2"></i></div>
+              </div>
+              <div class="metric-sub text-muted small">Avg / shot: <span id="metricAvgShot">0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card metric-card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="text-muted small">Range</div>
+                  <div class="metric-value" id="metricRange">0 - 0</div>
+                </div>
+                <div class="metric-icon bg-success-subtle text-success"><i class="bi bi-graph-up"></i></div>
+              </div>
+              <div class="metric-sub text-muted small">Std dev: <span id="metricStdDev">0</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card metric-card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <div class="text-muted small">Training vs Competition</div>
+                  <div class="metric-value" id="metricDelta">0</div>
+                </div>
+                <div class="metric-icon bg-warning-subtle text-warning"><i class="bi bi-arrow-left-right"></i></div>
+              </div>
+              <div class="metric-sub text-muted small">
+                T: <span id="metricTrainingAvg">0</span> · C: <span id="metricCompetitionAvg">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">Athlete Performance Over Time</h6>
+                  <div class="small text-muted">Zoom and pan to explore trends. Annotations highlight best and lowest points.</div>
+                </div>
+              </div>
+              <div id="chartPerformance" class="chart-xl"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="mb-0">Athlete Comparison</h6>
+              <div class="small text-muted mb-2">Training vs competition averages with delta line.</div>
+              <div id="chartComparison" class="chart-md"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="mb-0">Team Aggregated Statistics</h6>
+              <div class="small text-muted mb-2">Drill down to athlete averages.</div>
+              <div id="chartTeam" class="chart-md"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="mb-0">Score Distribution</h6>
+              <div class="small text-muted mb-2">Shot score vs distance from center.</div>
+              <div id="chartScatter" class="chart-md"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="mb-0">Shot Series Heatmap</h6>
+              <div class="small text-muted mb-2">Score frequency by shot order.</div>
+              <div id="chartHeatmap" class="chart-md"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="mb-0">Competition Series Analysis</h6>
+              <div class="small text-muted mb-2">Average and min/max totals by series.</div>
+              <div id="chartSeries" class="chart-md"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body">
+              <h6 class="mb-0">Consistency Gauge</h6>
+              <div class="small text-muted mb-2">Lower standard deviation means higher consistency.</div>
+              <div class="row g-2" id="consistencyGauges"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-0">Recent Sessions</h6>
+                  <div class="small text-muted">Sparkline trends for training, competition, and standard sessions.</div>
+                </div>
+              </div>
+              <div class="table-responsive mt-2">
+                <table class="table table-sm align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Session</th>
+                      <th>Mode</th>
+                      <th>Last Updated</th>
+                      <th>Trend</th>
+                    </tr>
+                  </thead>
+                  <tbody id="sparklineTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="mb-2">Athlete Metrics</h6>
+              <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Athlete</th>
+                      <th>Team</th>
+                      <th>Avg</th>
+                      <th>Min</th>
+                      <th>Max</th>
+                      <th>Std Dev</th>
+                      <th>Delta</th>
+                      <th>Trend</th>
+                    </tr>
+                  </thead>
+                  <tbody id="athleteTable"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://code.highcharts.com/stock/highstock.js"></script>
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+<script src="https://code.highcharts.com/modules/heatmap.js"></script>
+<script src="https://code.highcharts.com/modules/drilldown.js"></script>
+<script src="https://code.highcharts.com/modules/annotations.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/analytics.css') }}">
+{% endblock %}

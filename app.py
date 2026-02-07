@@ -38,6 +38,14 @@ def create_app() -> Flask:
         # Keep app import-safe even if training module has issues
         pass
 
+    # Analytics blueprint
+    try:
+        from analytics import analytics_bp
+        app.register_blueprint(analytics_bp, url_prefix="/analytics")
+    except Exception:
+        # Keep app import-safe even if analytics module has issues
+        pass
+
     # Ensure filesystem structure exists
     upload_dir = "static/uploads"
     snapshot_dir = "static/snapshots"
