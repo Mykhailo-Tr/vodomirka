@@ -3,21 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Target Scorer — система аналізу мішеней</title>
+    <title>Target Scorer — Демонстрація</title>
 
     <style>
         :root {
-            --bg-dark: #0a0e27;
-            --bg-light: #1a2847;
+            --bg-dark: #0f1419;
+            --bg-light: #1a1f2e;
             --accent-primary: #00d4ff;
             --accent-secondary: #7c3aed;
-            --accent-tertiary: #06b6d4;
             --text-primary: #ffffff;
-            --text-secondary: #e2e8f0;
-            --text-muted: #94a3b8;
-            --border-color: #334155;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
+            --border-color: #374151;
             --success: #10b981;
-            --warning: #f59e0b;
         }
 
         * {
@@ -31,317 +29,105 @@
         }
 
         body {
-            font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--bg-dark) 0%, #0f1a3a 25%, #1a1a4a 50%, var(--bg-dark) 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+            background: var(--bg-dark);
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
         }
 
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* Animated Background Elements */
-        body::before {
-            content: '';
+        /* Header and Navigation */
+        header {
             position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.1) 0%, transparent 50%);
-            animation: moveBackground 20s ease infinite;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        @keyframes moveBackground {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(100px, 100px); }
-        }
-
-        /* Sidebar Navigation with Enhanced Styling */
-        .sidebar {
-            position: fixed;
-            left: 0;
             top: 0;
-            width: 280px;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(20px) saturate(180%);
-            border-right: 1px solid rgba(148, 163, 184, 0.1);
-            overflow-y: auto;
-            padding: 40px 20px;
-            z-index: 1000;
-            box-shadow: -50px 0 100px rgba(0, 0, 0, 0.3);
-        }
-
-        .sidebar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(0, 212, 255, 0.5) 0%, transparent 50%);
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
-            border-radius: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, var(--accent-secondary), var(--accent-primary));
-        }
-
-        .sidebar-logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(0, 212, 255, 0.2);
-            letter-spacing: -0.5px;
-            animation: logoGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes logoGlow {
-            0%, 100% { filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.3)); }
-            50% { filter: drop-shadow(0 0 20px rgba(0, 212, 255, 0.6)); }
-        }
-
-        .sidebar-nav {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .sidebar-nav li {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar-nav a {
-            display: flex;
-            align-items: center;
-            padding: 14px 16px;
-            color: var(--text-muted);
-            text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.95rem;
-            font-weight: 500;
-            border: 2px solid transparent;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .sidebar-nav a::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--accent-primary), var(--accent-secondary));
-            transform: scaleY(0);
-            transform-origin: top;
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar-nav a:hover {
-            color: var(--accent-primary);
-            background: rgba(0, 212, 255, 0.05);
-            border-color: rgba(0, 212, 255, 0.2);
-            transform: translateX(8px);
-        }
-
-        .sidebar-nav a:hover::before {
-            transform: scaleY(1);
-        }
-
-        .sidebar-nav a.active {
-            color: var(--accent-primary);
-            background: linear-gradient(90deg, rgba(0, 212, 255, 0.15), transparent);
-            border-color: var(--accent-primary);
-            font-weight: 700;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 280px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Hero Section with Advanced Effects */
-        .hero {
-            padding: 120px 60px;
-            text-align: center;
-            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
-            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            animation: heroGlow 8s ease-in-out infinite;
-        }
-
-        @keyframes heroGlow {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.2); }
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-tertiary) 50%, var(--accent-primary) 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
-            letter-spacing: -2px;
-            animation: titleShift 4s ease infinite;
-            position: relative;
-            z-index: 2;
-        }
-
-        @keyframes titleShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .hero .subtitle {
-            font-size: 1.3rem;
-            color: var(--text-secondary);
-            max-width: 900px;
-            margin: 0 auto 40px;
-            line-height: 1.9;
-            position: relative;
-            z-index: 2;
-            font-weight: 300;
-            letter-spacing: 0.3px;
-        }
-
-        .badge-group {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 40px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .badge {
-            display: inline-block;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(124, 58, 237, 0.1));
-            color: var(--accent-primary);
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            transition: all 0.3s ease;
+            width: 100%;
+            background: rgba(15, 20, 25, 0.95);
             backdrop-filter: blur(10px);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .badge::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: translateX(-100%);
-            transition: transform 0.6s;
-        }
-
-        .badge:hover {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.2));
-            border-color: var(--accent-primary);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.2);
-        }
-
-        .badge:hover::before {
-            transform: translateX(100%);
-        }
-
-        /* Sections with Animations */
-        section {
-            padding: 100px 60px;
-            border-bottom: 1px solid rgba(0, 212, 255, 0.05);
-            max-width: 1600px;
-            margin: 0 auto;
-            position: relative;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease forwards;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        section:nth-child(1) { animation-delay: 0s; }
-        section:nth-child(2) { animation-delay: 0.1s; }
-        section:nth-child(3) { animation-delay: 0.2s; }
-        section:nth-child(4) { animation-delay: 0.3s; }
-        section:nth-child(5) { animation-delay: 0.4s; }
-        section:nth-child(6) { animation-delay: 0.5s; }
-        section:nth-child(7) { animation-delay: 0.6s; }
-        section:nth-child(8) { animation-delay: 0.7s; }
-
-        section h2 {
-            font-size: 3rem;
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
             background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 50px;
+            text-decoration: none;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 0.5rem;
+        }
+
+        nav a:hover {
+            color: var(--accent-primary);
+            border-bottom-color: var(--accent-primary);
+        }
+
+        main {
+            margin-top: 70px;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 4rem 2rem;
             text-align: center;
-            position: relative;
-            padding-bottom: 30px;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             font-weight: 800;
-            letter-spacing: -1px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            line-height: 1.8;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 4rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.05);
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: var(--text-primary);
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
         }
 
         section h2::after {
@@ -350,978 +136,663 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
+            width: 60px;
+            height: 3px;
             background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
             border-radius: 10px;
-            animation: slideWidth 2s ease infinite;
         }
 
-        @keyframes slideWidth {
-            0%, 100% { width: 80px; }
-            50% { width: 120px; }
+        /* Feature Grid */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
         }
 
-        /* Content Grid */
-        .content-grid {
+        .feature-item {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            align-items: center;
-            margin-top: 50px;
+            gap: 3rem;
+            align-items: start;
         }
 
-        .content-grid.reverse {
+        .feature-item.reverse {
             direction: rtl;
         }
 
-        .content-grid.reverse > * {
+        .feature-item.reverse > * {
             direction: ltr;
         }
 
-        .photo-placeholder {
+        .image-container {
+            position: relative;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            aspect-ratio: 4/3;
             background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(124, 58, 237, 0.1));
             border: 2px solid rgba(0, 212, 255, 0.2);
-            border-radius: 16px;
-            aspect-ratio: 4/3;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 500;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
             overflow: hidden;
-            backdrop-filter: blur(10px);
         }
 
-        .photo-placeholder::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, transparent, rgba(0, 212, 255, 0.1), transparent);
-            transform: rotate(45deg) translateX(-100%);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: rotate(45deg) translateX(-100%); }
-            100% { transform: rotate(45deg) translateX(100%); }
-        }
-
-        .photo-placeholder:hover {
+        .image-placeholder:hover {
             border-color: var(--accent-primary);
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(124, 58, 237, 0.15));
-            transform: translateY(-8px);
-            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.15);
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15), rgba(124, 58, 237, 0.12));
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.15);
         }
 
-        .photo-placeholder img {
+        .image-placeholder img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            position: relative;
-            z-index: 2;
+            transition: transform 0.3s ease;
         }
 
-        .content-text h3 {
-            font-size: 2rem;
+        .image-placeholder:hover img {
+            transform: scale(1.02);
+        }
+
+        .image-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--accent-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-content h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
             color: var(--text-primary);
-            margin-bottom: 25px;
             font-weight: 700;
-            letter-spacing: -0.5px;
         }
 
-        .content-text p {
+        .feature-content p {
             color: var(--text-secondary);
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            line-height: 1.9;
-            font-weight: 400;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-size: 1rem;
         }
 
-        .content-text ul {
+        .button-list {
             list-style: none;
-            padding-left: 0;
+            margin-top: 1.5rem;
         }
 
-        .content-text li {
-            padding-left: 40px;
-            margin-bottom: 18px;
-            position: relative;
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-            line-height: 1.6;
+        .button-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 212, 255, 0.05);
+            border-left: 3px solid var(--accent-primary);
+            margin-bottom: 1rem;
+            border-radius: 6px;
             transition: all 0.3s ease;
         }
 
-        .content-text li::before {
-            content: '▸';
-            position: absolute;
-            left: 0;
+        .button-item:hover {
+            background: rgba(0, 212, 255, 0.1);
+            transform: translateX(4px);
+        }
+
+        .button-item strong {
             color: var(--accent-primary);
-            font-size: 1.5rem;
-            opacity: 0;
-            animation: dotAppear 0.4s ease forwards;
+            min-width: 150px;
         }
 
-        @keyframes dotAppear {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .button-item span {
+            color: var(--text-secondary);
+            flex: 1;
         }
 
-        .content-text li:hover {
-            color: var(--text-primary);
-            transform: translateX(10px);
-        }
-
-        /* Cards Grid */
-        .cards-grid {
+        /* Multi-Image Grid */
+        .multi-image-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        .card {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(124, 58, 237, 0.05));
-            border: 1px solid rgba(0, 212, 255, 0.15);
-            border-radius: 16px;
-            padding: 40px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .multi-image-item {
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
+        .multi-image-item .image-placeholder {
+            aspect-ratio: 4/3;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
             top: 0;
-            left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
-            transition: left 0.6s ease;
+            background-color: rgba(0, 0, 0, 0.95);
+            animation: fadeIn 0.3s ease;
         }
 
-        .card::after {
-            content: '';
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .card:hover {
-            border-color: var(--accent-primary);
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(124, 58, 237, 0.12));
-            transform: translateY(-12px);
-            box-shadow: 0 20px 60px rgba(0, 212, 255, 0.15);
-        }
-
-        .card:hover::before {
-            left: 100%;
-        }
-
-        .card:hover::after {
-            opacity: 1;
-        }
-
-        .card h3 {
-            color: var(--text-primary);
-            margin-bottom: 18px;
-            font-size: 1.4rem;
-            font-weight: 700;
-            position: relative;
-            z-index: 2;
-        }
-
-        .card p {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            line-height: 1.7;
-            position: relative;
-            z-index: 2;
-            font-weight: 400;
-        }
-
-        /* Timeline */
-        .timeline {
-            position: relative;
-            padding: 50px 0;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, transparent 100%);
-            border-radius: 10px;
+            transform: translate(-50%, -50%);
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            animation: zoomIn 0.3s ease;
         }
 
-        .timeline-item {
-            margin-bottom: 60px;
-            position: relative;
-            opacity: 0;
-            animation: timelineSlide 0.6s ease forwards;
+        @keyframes zoomIn {
+            from { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
-        @keyframes timelineSlide {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .timeline-item:nth-child(odd) {
-            margin-left: 0;
-            margin-right: auto;
-            width: 48%;
-            text-align: right;
-        }
-
-        .timeline-item:nth-child(even) {
-            margin-left: auto;
-            width: 48%;
-            text-align: left;
-        }
-
-        .timeline-item:nth-child(1) { animation-delay: 0.1s; }
-        .timeline-item:nth-child(2) { animation-delay: 0.2s; }
-        .timeline-item:nth-child(3) { animation-delay: 0.3s; }
-        .timeline-item:nth-child(4) { animation-delay: 0.4s; }
-        .timeline-item:nth-child(5) { animation-delay: 0.5s; }
-
-        .timeline-dot {
+        .modal-close {
             position: absolute;
-            width: 20px;
-            height: 20px;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            border: 4px solid var(--bg-dark);
-            border-radius: 50%;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-            animation: dotPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes dotPulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(0, 212, 255, 0.5); }
-            50% { box-shadow: 0 0 50px rgba(0, 212, 255, 0.8); }
-        }
-
-        .timeline-content {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(124, 58, 237, 0.05));
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            padding: 30px;
-            border-radius: 12px;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .timeline-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .timeline-content:hover {
-            border-color: var(--accent-primary);
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(124, 58, 237, 0.12));
-            transform: scale(1.02);
-            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.15);
-        }
-
-        .timeline-content:hover::before {
-            opacity: 1;
-        }
-
-        .timeline-content h4 {
+            top: 2rem;
+            right: 2rem;
+            font-size: 2rem;
+            font-weight: bold;
             color: var(--accent-primary);
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-            font-weight: 700;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
         }
 
-        .timeline-content p {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            font-weight: 400;
+        .modal-close:hover {
+            background: var(--accent-primary);
+            color: var(--bg-dark);
         }
 
-        /* Stats */
-        .stats-grid {
+        /* Gallery Grid for Multiple Images */
+        .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        .stat-box {
-            text-align: center;
-            padding: 40px;
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.08), rgba(124, 58, 237, 0.08));
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            border-radius: 16px;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .gallery-item {
             position: relative;
+            cursor: pointer;
+            border-radius: 12px;
             overflow: hidden;
-            backdrop-filter: blur(10px);
+            aspect-ratio: 4/3;
         }
 
-        .stat-box::before {
-            content: '';
+        .gallery-item .image-placeholder {
+            height: 100%;
+            width: 100%;
+            border: none;
+            margin: 0;
+        }
+
+        .gallery-item-label {
             position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .stat-box:hover {
-            border-color: var(--accent-primary);
-            transform: translateY(-15px);
-            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.2);
-        }
-
-        .stat-box:hover::before {
-            opacity: 1;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 900;
-            margin-bottom: 12px;
-            animation: countUp 2s ease-out forwards;
-        }
-
-        @keyframes countUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            font-weight: 500;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            color: var(--accent-primary);
+            padding: 1rem;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         /* Footer */
         footer {
-            background: linear-gradient(180deg, rgba(10, 14, 39, 0.5), rgba(10, 14, 39, 0.8));
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%);
             border-top: 1px solid rgba(0, 212, 255, 0.1);
-            padding: 50px 60px;
+            padding: 3rem 2rem;
             text-align: center;
             color: var(--text-secondary);
-            backdrop-filter: blur(10px);
-            position: relative;
-        }
-
-        footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
         }
 
         footer p {
-            margin-bottom: 12px;
-            font-weight: 400;
+            margin-bottom: 0.5rem;
         }
 
-        footer strong {
-            background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
-                padding: 20px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .sidebar-nav {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                gap: 8px;
-            }
-
-            .hero {
-                padding: 70px 30px;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero .subtitle {
-                font-size: 1.1rem;
-            }
-
-            section {
-                padding: 60px 30px;
-            }
-
-            section h2 {
-                font-size: 2.2rem;
-            }
-
-            .content-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-
-            .timeline::before {
-                left: 10px;
-            }
-
-            .timeline-item {
-                width: 100% !important;
-                text-align: left !important;
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-                padding-left: 50px;
-            }
-
-            .timeline-dot {
-                left: 0;
-            }
-
-            .badge-group {
-                gap: 8px;
-            }
-
-            .badge {
-                font-size: 0.75rem;
-                padding: 8px 14px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .hero {
-                padding: 50px 20px;
-            }
-
             .hero h1 {
                 font-size: 2rem;
             }
 
-            section {
-                padding: 40px 20px;
+            .hero p {
+                font-size: 1rem;
             }
 
             section h2 {
                 font-size: 1.8rem;
             }
 
-            .stat-number {
-                font-size: 2.2rem;
+            .feature-item,
+            .feature-item.reverse {
+                grid-template-columns: 1fr;
+                direction: ltr;
             }
 
-            .content-text h3 {
-                font-size: 1.5rem;
+            .feature-item.reverse > * {
+                direction: ltr;
             }
 
-            .card {
-                padding: 25px;
+            nav {
+                gap: 1rem;
+                font-size: 0.85rem;
             }
-        }
 
-        /* Loading Animation for First Load */
-        @keyframes pageLoad {
-            from {
-                opacity: 0;
+            header {
+                flex-direction: column;
+                gap: 1rem;
             }
-            to {
-                opacity: 1;
-            }
-        }
 
-        body {
-            animation: pageLoad 0.5s ease;
+            main {
+                margin-top: 120px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<!-- Sidebar Navigation -->
-<aside class="sidebar">
-    <div class="sidebar-logo">⚡ Target Scorer</div>
+<!-- Header -->
+<header>
+    <a href="#" class="logo">⚡ Target Scorer</a>
     <nav>
-        <ul class="sidebar-nav">
-            <li><a href="#hero" class="nav-link active">🎯 Головна</a></li>
-            <li><a href="#overview" class="nav-link">👁️ Огляд</a></li>
-            <li><a href="#features" class="nav-link">✨ Можливості</a></li>
-            <li><a href="#technology" class="nav-link">🔧 Технології</a></li>
-            <li><a href="#roadmap" class="nav-link">🗺️ Дорожна карта</a></li>
-            <li><a href="#results" class="nav-link">📊 Результати</a></li>
-            <li><a href="#future" class="nav-link">🚀 Перспективи</a></li>
-            <li><a href="#team" class="nav-link">🏆 Про проект</a></li>
-        </ul>
+        <a href="#standard">Стандартний</a>
+        <a href="#training">Тренування</a>
+        <a href="#sessions">Сесії</a>
+        <a href="#competition">Змагання</a>
+        <a href="#bullet">Постріл</a>
+        <a href="#athletes">Менеджмент</a>
+        <a href="#analytics">Статистика</a>
     </nav>
-</aside>
+</header>
 
 <!-- Main Content -->
-<main class="main-content">
+<main>
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero">
+    <!-- Hero -->
+    <section class="hero">
         <h1>Target Scorer</h1>
-        <p class="subtitle">
-            Інтелектуальна система автоматизованого аналізу мішеней 
-            для спортивної стрільби на основі комп'ютерного зору та штучного інтелекту
+        <p>Інтелектуальна система аналізу результатів стрільби на основі комп'ютерного зору</p>
+    </section>
+
+    <!-- 1. Standard Mode -->
+    <section id="standard">
+        <h2>Аналіз та оцінка результатів</h2>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="image-container">
+                    <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                        <img src="images/standard.png" alt="Аналіз результатів" data-placeholder="📹 Основна сторінка аналізу">
+                    </div>
+                    <div class="image-badge">Натисніть для збільшення</div>
+                </div>
+                <div class="feature-content">
+                    <h3>Основна функціональність системи</h3>
+                    <p>Основна сторінка для анoлізу фотографій мішеней. Система використовує нейромережу YOLOv11 для детекції пострілів та розраховує результати за стандартом ISSF "Best Edge".</p>
+                    <ul class="button-list">
+                        <li class="button-item">
+                            <strong>«Файл»</strong>
+                            <span>Вибір та завантаження фото мішені з вашого комп'ютера</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Камера»</strong>
+                            <span>Вибір вебкамери та захоплення знімка у реальному часі</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Обробити»</strong>
+                            <span>Запустити аналіз зображення</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Результат»</strong>
+                            <span>Перегляд детектованих пострілів, їх позицій та розрахункового результату</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Training Mode -->
+    <section id="training">
+        <h2>Режим тренування спортсменів</h2>
+        <div class="feature-grid">
+            <div class="feature-item reverse">
+                <div class="image-container">
+                    <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                        <img src="images/training.png" alt="Тренувальний режим" data-placeholder="🎯 Режим тренування">
+                    </div>
+                    <div class="image-badge">Натисніть для збільшення</div>
+                </div>
+                <div class="feature-content">
+                    <h3>Тренування з збереженням результатів</h3>
+                    <p>Спеціалізований режим для організованого тренування. Дозволяє створювати сесії, призначати спортсменів, завантажувати фотографії та автоматично зберігати всі результати у базу даних для подальшого аналізу.</p>
+                    <ul class="button-list">
+                        <li class="button-item">
+                            <strong>«Start Session / Finish Session»</strong>
+                            <span>Розпочинає або завершує сесію тренування</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Секція Upload/Snapshot»</strong>
+                            <span>Індентична секція як в стандартному режимі для завантаження фото або відеопотоку</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Session Info»</strong>
+                            <span>Інформація про сесію тренування та спортсменів</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Statistics»</strong>
+                            <span>Загальна статистика тренування та графік результату</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Training Sessions -->
+    <section id="sessions">
+        <h2>Історія та архів сесій тренувань</h2>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="image-container">
+                    <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                        <img src="images/sessions.png" alt="Список сесій" data-placeholder="📋 Список сесій тренувань">
+                    </div>
+                    <div class="image-badge">Натисніть для збільшення</div>
+                </div>
+                <div class="feature-content">
+                    <h3>Управління архівом сесій</h3>
+                    <p>Повний список усіх завершених тренувальних сесій. Кожна сесія містить всі завантажені фотографії, детектовані постріли та розраховані результати. Дозволяє переглядати деталі, редагувати оцінки та видаляти результати.</p>
+                    <ul class="button-list">
+                        <li class="button-item">
+                            <strong>«Блок Sessions»</strong>
+                            <span>Список сесій тренувань. Інформація про кожну сесію та кнопки для управління</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Блок Filters»</strong>
+                            <span>Фільтри для сортування та пошуку сесій</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Refresh»</strong>
+                            <span>Оновлює список сесій</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«New Session»</strong>
+                            <span>Створює нову сесію тренування</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Competition Management -->
+    <section id="competition">
+        <h2>Організація та налаштування змагань</h2>
+        <div class="feature-grid">
+            <div class="feature-item reverse">
+                <div class="image-container">
+                    <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                        <img src="images/competitions_management.png" alt="Змагання менеджмент" data-placeholder="🏆 Менеджмент змагань">
+                    </div>
+                    <div class="image-badge">Натисніть для збільшення</div>
+                </div>
+                <div class="feature-content">
+                    <h3>Управління процесом змагання</h3>
+                    <p>Центр управління змаганнями. Дозволяє створювати нові змагання, додавати учасників, обирати вправи з системної бази (ГП-11, ГП-11a, ГП-12) та організовувати сесії для кожного атлета. Система автоматично розраховує рейтинг на основі результатів.</p>
+                    <ul class="button-list">
+                        <li class="button-item">
+                            <strong>«Create Competition»</strong>
+                            <span>Створює нову змаганню в системі</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Блок Active Competitions»</strong>
+                            <span>Список активних змагань</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Manage»</strong>
+                            <span>Перегляд та менеджмент змагань</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Manage Exercises / New Exercise»</strong>
+                            <span>Перегляд та управління вправами. Створення нової вправи</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Help»</strong>
+                            <span>Інструкції</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Competition Mode -->
+    <section id="competition-mode">
+        <h2>Проведення змагання в реальному часі</h2>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="image-container">
+                    <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                        <img src="images/competitions.png" alt="Змагальний режим" data-placeholder="⚡ Проведення змагання">
+                    </div>
+                    <div class="image-badge">Натисніть для збільшення</div>
+                </div>
+                <div class="feature-content">
+                    <h3>Управління ходом змагання</h3>
+                    <p>Активна сторінка управління змаганням. Дозволяє завантажувати фотографії мішеней для кожного атлета, миттєво аналізувати результати та слідкувати за рейтингом у реальному часі. Система автоматично оновлює таблицю лідерів по мірі надходження результатів.</p>
+                    <ul class="button-list">
+                        <li class="button-item">
+                            <strong>«Upload from File / Use Camera»</strong>
+                            <span>Завантаження фото мішені з файлу або через веб-камеру </span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Finish Series»</strong>
+                            <span>Завершення поточної серії</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Finish Series Early»</strong>
+                            <span>Дострокове завершення поточної серії</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Блок Athletes / Series Progress»</strong>
+                            <span>Список учасників змагання та інформація про їхні серії</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Statistics»</strong>
+                            <span>Статистика змагання та інформація про кожного учасника</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Bullet Details -->
+    <section id="bullet">
+        <h2>Детальна інформація про кожен постріл</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+            Повний аналіз координат, відстаней та результатів детектованих пострілів
         </p>
-        <div class="badge-group">
-            <span class="badge">🤖 YOLOv11</span>
-            <span class="badge">🎨 OpenCV</span>
-            <span class="badge">🎯 ISSF Best Edge</span>
-            <span class="badge">⚙️ Flask + Python</span>
-            <span class="badge">🌐 Roboflow</span>
-        </div>
-    </section>
-
-    <!-- Overview Section -->
-    <section id="overview">
-        <h2>Система та її призначення</h2>
-        <div class="content-grid">
-            <div class="content-text">
-                <h3>Що зробить система?</h3>
-                <p>
-                    Target Scorer — це розумна система, яка автоматично аналізує результати стрільби на паперових та картонних мішенях. 
-                    За допомогою камери та штучного інтелекту система визначає кількість пострілів, їх точне розташування та оцінює результат 
-                    по правилам ISSF.
-                </p>
-                <ul>
-                    <li>Автоматична детекція отворів від куль</li>
-                    <li>Точне визначення координат у міліметрах</li>
-                    <li>Розрахунок результату за стандартами ISSF</li>
-                    <li>Збереження та аналіз статистики</li>
-                </ul>
-            </div>
-            <div class="photo-placeholder">
-                <span>📸 Фото мішені в системі</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features">
-        <h2>Ключові можливості</h2>
-        <div class="cards-grid">
-            <div class="card">
-                <h3>🤖 Детекція об'єктів</h3>
-                <p>
-                    Використання моделі YOLOv11 для точної детекції отворів від куль, 
-                    центру мішені та залікових кілець на зображенні.
-                </p>
-            </div>
-            <div class="card">
-                <h3>📐 Точна геометрія</h3>
-                <p>
-                    Перетворення координат з пікселів у міліметри з урахуванням 
-                    параметрів камери. Принцип ISSF "Best Edge" для найточнішого результату.
-                </p>
-            </div>
-            <div class="card">
-                <h3>📊 Вебінтерфейс</h3>
-                <p>
-                    Сучасний та интуїтивний інтерфейс для перегляду результатів, 
-                    налаштування параметрів та аналізу статистики.
-                </p>
-            </div>
-            <div class="card">
-                <h3>💾 Збереження даних</h3>
-                <p>
-                    Безпечне видалення всіх мішеней, результатів та зображень 
-                    з можливістю експорту даних для подальшого аналізу.
-                </p>
-            </div>
-            <div class="card">
-                <h3>⚡ Висока продуктивність</h3>
-                <p>
-                    Швидкий аналіз фотографій у реальному часі навіть на слабших пристроях 
-                    завдяки оптимізованим алгоритмам обробки.
-                </p>
-            </div>
-            <div class="card">
-                <h3>📱 Адаптивний дизайн</h3>
-                <p>
-                    Повна підтримка мобільних пристроїв, планшетів та десктопів 
-                    з однаковою якістю інтерфейсу.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Technology Section -->
-    <section id="technology">
-        <h2>Технологічний стек</h2>
-        <div class="content-grid reverse">
-            <div class="content-text">
-                <h3>З яких технологій складається?</h3>
-                <ul>
-                    <li><strong>Python</strong> — серверна логіка та обчислення</li>
-                    <li><strong>Flask</strong> — вебсервер та REST API</li>
-                    <li><strong>OpenCV</strong> — обробка зображень</li>
-                    <li><strong>YOLOv11</strong> — нейромережа для детекції</li>
-                    <li><strong>NumPy</strong> — математичні операції</li>
-                    <li><strong>SQLite</strong> — база даних результатів</li>
-                    <li><strong>HTML/CSS/JavaScript</strong> — фронтенд інтерфейс</li>
-                </ul>
-            </div>
-            <div class="photo-placeholder">
-                <span>🔧 Архітектура системи</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Roadmap Section -->
-    <section id="roadmap">
-        <h2>Дорожна карта розвитку</h2>
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>✅ Завершено: Основна функціональність</h4>
-                    <p>Детекція пострілів, розрахунок позицій, вебінтерфейс</p>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                    <img src="images/target_ideal.jpg" alt="Деталь координат" data-placeholder="📍 Координати пострілів">
                 </div>
             </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>✅ Завершено: Тестування</h4>
-                    <p>Валідація на 100+ мішеня, точність 97%</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>🔄 В розвитку: Оптимізація алгоритмів</h4>
-                    <p>Підвищення точності при щільних групах пострілів</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>📋 Планується: Розширена аналітика</h4>
-                    <p>Профілі спортсменів, тренувальні плани</p>
-                </div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <div class="timeline-content">
-                    <h4>🎯 Планується: Інші дисципліни ISSF</h4>
-                    <p>Рухомі мішені, інші відстані та типи зброї</p>
+            <div class="gallery-item">
+                <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                    <img src="images/target_scored.jpg" alt="Деталь результатів" data-placeholder="🎯 Результати пострілів">
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Results Section -->
-    <section id="results">
-        <h2>Результати тестування</h2>
-        <div class="content-grid">
-            <div class="photo-placeholder">
-                <span>📈 Графіки точності</span>
-            </div>
-            <div class="content-text">
-                <h3>Перевірена точність</h3>
-                <p>
-                    Система була ретельно протестована на великому наборі даних, 
-                    що включав різні умови освітлення, типи камер та якість мішеней.
-                </p>
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-number">97%</div>
-                        <div class="stat-label">Коректне визначення пострілів</div>
+
+
+    <!-- 9. Athletes Management -->
+    <section id="athletes">
+        <h2>Управління профілями спортсменів</h2>
+        <div class="feature-grid">
+            <div class="feature-item">
+                <div class="image-container">
+                    <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                        <img src="images/athlets.png" alt="Спортсмени" data-placeholder="👥 Спортсмени">
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-number">±1</div>
-                        <div class="stat-label">Максимальне відхилення</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number">100+</div>
-                        <div class="stat-label">Мішеней тестовано</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-number">176</div>
-                        <div class="stat-label">Пострілів проаналізовано</div>
-                    </div>
+                    <div class="image-badge">Натисніть для збільшення</div>
+                </div>
+                <div class="feature-content">
+                    <h3>Базова інформація та обладнання атлетів</h3>
+                    <p>Система управління профілями спортсменів з їх особистою інформацією, рівнем, обладнанням (гвинтівка, оптика, костюм) та місцем тренування. Всі результати привязуються до профілю атлета для аналізу прогресу.</p>
+                    <ul class="button-list">
+                        <li class="button-item">
+                            <strong>«Add Athlete»</strong>
+                            <span>Реєстрація нового спортсмена з ім'ям та класифікацією</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Edit Athlete»</strong>
+                            <span>Редагування інформації про спортсмена та його обладнання</span>
+                        </li>
+                        <li class="button-item">
+                            <strong>«Delete Athlete»</strong>
+                            <span>Видалення профілю спортсмена з системи</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Future Section -->
-    <section id="future">
-        <h2>Перспективи розвитку</h2>
-        <div class="cards-grid">
-            <div class="card">
-                <h3>🎯 Розширена поддержка</h3>
-                <p>
-                    Адаптація під інші дисципліни ISSF: 25м, 50м, 
-                    рухомі мішені та інші типи зброї.
-                </p>
-            </div>
-            <div class="card">
-                <h3>🧠 Покращена AI</h3>
-                <p>
-                    Використання більш складних моделей для роботи 
-                    з перекритими та щільними групами пострілів.
-                </p>
-            </div>
-            <div class="card">
-                <h3>📚 Аналітичні інструменти</h3>
-                <p>
-                    Детальні звіти про прогрес, порівняння результатів, 
-                    рекомендації щодо тренування.
-                </p>
-            </div>
-            <div class="card">
-                <h3>🔗 Інтеграція</h3>
-                <p>
-                    Підключення до інших платформ, API для зовнішніх сервісів, 
-                    синхронизація даних.
-                </p>
-            </div>
-            <div class="card">
-                <h3>🌐 Розширення мережі</h3>
-                <p>
-                    Поширення в інших країнах, локалізація інтерфейсу, 
-                    підтримка різних стандартів.
-                </p>
-            </div>
-            <div class="card">
-                <h3>⚙️ Додаткові функції</h3>
-                <p>
-                    Кібердиапазон, калібрування камер, автоматичне коригування 
-                    параметрів освітлення.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="team">
-        <h2>Про проект</h2>
-        <div class="content-grid">
-            <div class="content-text">
-                <h3>Освітня ініціатива МАН</h3>
-                <p>
-                    Target Scorer розроблений як науково-дослідницький проект в рамках МАН України. 
-                    Проект демонструє практичне застосування сучасних технологій штучного інтелекту 
-                    та комп'ютерного зору до реальної предметної області.
-                </p>
-                <h3>Мета проекту</h3>
-                <ul>
-                    <li>Показати можливості комп'ютерного зору у спорті</li>
-                    <li>Розробити інструмент для допомоги тренерам та спортсменам</li>
-                    <li>Сприяти розвитку цифрових навичок у гімназистів</li>
-                    <li>Демонстрація застосування ШІ у практичних задачах</li>
-                </ul>
-            </div>
-            <div class="photo-placeholder">
-                <span>🏆 Логотип МАН України</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p><strong>Target Scorer © 2026</strong></p>
-        <p>Науково-дослідницький проєкт МАН України</p>
-        <p style="margin-top: 25px; font-size: 0.85rem; font-weight: 300;">
-            Проект демонструє застосування комп'ютерного зору, машинного навчання та веб-технологій 
-            до розв'язання реальної задачи в спортивній стрільбі. 
+    <!-- 10. Analytics -->
+    <section id="analytics">
+        <h2>Аналітика та статистика результатів</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 2rem;">
+            Детальні звіти та графіки прогресу за спортсменами і сесіями
         </p>
-    </footer>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                    <img src="images/analytics1.png" alt="Аналітика 1" data-placeholder="📊 Графіки прогресу">
+                </div>
+                <div class="gallery-item-label">Тренди та динаміка результатів</div>
+            </div>
+            <div class="gallery-item">
+                <div class="image-placeholder" onclick="openModal(this.querySelector('img'))">
+                    <img src="images/analytics2.png" alt="Аналітика 2" data-placeholder="📈 Детальний аналіз">
+                </div>
+                <div class="gallery-item-label">Порівняння спортсменів та вправ</div>
+            </div>
+        </div>
+    </section>
 
 </main>
 
+<!-- Footer -->
+<footer>
+    <p><strong>Target Scorer © 2026</strong></p>
+    <p>Науково-дослідницький проект МАН України</p>
+    <p style="margin-top: 1.5rem; font-size: 0.9rem;">
+        Демонстрація функцій системи аналізу результатів стрільби на основі комп'ютерного зору та штучного інтелекту
+    </p>
+</footer>
+
+<!-- Modal for Images -->
+<div id="imageModal" class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <img class="modal-content" id="modalImage" src="" alt="">
+</div>
+
 <script>
-    // ============================================
-    // ADVANCED INTERACTIONS & ANIMATIONS
-    // ============================================
+    // Modal functionality
+    function openModal(imgElement) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        const src = imgElement.src;
+        
+        // If src is empty, use data-placeholder
+        if (!src || src.trim() === '') {
+            return; // Don't open modal if no image
+        }
+        
+        modalImg.src = src;
+        modal.style.display = 'block';
+    }
 
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('section');
+    function closeModal() {
+        document.getElementById('imageModal').style.display = 'none';
+    }
 
-    function updateActiveLink() {
+    // Close modal when clicking outside of image
+    document.getElementById('imageModal').addEventListener('click', function(event) {
+        if (event.target === this) {
+            closeModal();
+        }
+    });
+
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Active link highlighting on scroll
+    window.addEventListener('scroll', () => {
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('nav a');
+        
         let current = '';
         sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            if (pageYOffset >= sectionTop - 300) {
+            const sectionTop = section.offsetTop - 100;
+            if (window.scrollY >= sectionTop) {
                 current = section.getAttribute('id');
             }
         });
 
         navLinks.forEach(link => {
-            link.classList.remove('active');
+            link.style.color = '';
+            link.style.borderBottomColor = '';
             if (link.getAttribute('href') === '#' + current) {
-                link.classList.add('active');
-            }
-        });
-    }
-
-    window.addEventListener('scroll', updateActiveLink, { passive: true });
-    updateActiveLink();
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            const targetSection = document.getElementById(targetId);
-            if (targetSection) {
-                const headerOffset = 100;
-                const elementPosition = targetSection.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                window.scrollTo({top: offsetPosition, behavior: 'smooth'});
+                link.style.color = 'var(--accent-primary)';
+                link.style.borderBottomColor = 'var(--accent-primary)';
             }
         });
     });
 
-    const observerOptions = {threshold: 0.1, rootMargin: '0px 0px -50px 0px'};
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.animation = 'fadeInUp 0.8s ease forwards';
-            }
-        });
-    }, observerOptions);
-
-    sections.forEach(section => observer.observe(section));
-
-    window.addEventListener('scroll', () => {
-        const hero = document.querySelector('.hero');
-        if (hero) {
-            const scrollPosition = window.pageYOffset;
-            hero.style.backgroundPositionY = (scrollPosition * 0.5) + 'px';
-        }
-    }, { passive: true });
-
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            const rotateX = (y - centerY) / 10;
-            const rotateY = (centerX - x) / 10;
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
-        });
-    });
-
-    const statNumbers = document.querySelectorAll('.stat-number');
-    const counterObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const target = entry.target;
-                const text = target.textContent;
-                const number = parseInt(text) || 0;
-                if (number === 0) return;
-                let current = 0;
-                const increment = Math.ceil(number / 30);
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= number) {
-                        target.textContent = text;
-                        clearInterval(timer);
-                    } else {
-                        target.textContent = current;
-                    }
-                }, 30);
-                counterObserver.unobserve(target);
-            }
-        });
-    }, { threshold: 0.5 });
-
-    statNumbers.forEach(stat => counterObserver.observe(stat));
-
-    window.addEventListener('scroll', () => {
-        const scrolled = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = scrolled / docHeight;
-        const pageLoadBar = document.querySelector('[data-scroll-bar]') || document.createElement('div');
-        pageLoadBar.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: ${scrollPercent * 100}%;
-            height: 2px;
-            background: linear-gradient(90deg, #00d4ff, #7c3aed);
-            z-index: 10000;
-            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
-        `;
-        if (!pageLoadBar.hasAttribute('data-scroll-bar')) {
-            pageLoadBar.setAttribute('data-scroll-bar', '');
-            document.body.appendChild(pageLoadBar);
-        }
-    }, { passive: true });
-
-    console.log('✨ Target Scorer - Professional Frontend Loaded');
+    console.log('✨ Target Scorer Demonstration Loaded');
 </script>
 
 </body>
